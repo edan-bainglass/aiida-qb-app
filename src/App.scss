@@ -1,22 +1,24 @@
 #qb-header {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1.5rem;
+	max-width: 100%;
 	margin-bottom: 2rem;
-	text-align: center;
 
-	h1 {
-		display: inline-flex;
-		font-size: 5rem;
-		font-weight: 700;
-
-		a {
-			display: inline-flex;
-			margin-right: 0.5rem;
-			align-items: center;
-
-			img {
-				width: 80px;
-			}
-		}
+	img {
+		width: 300px;
 	}
+
+	code {
+		font-size: 5rem;
+		font-weight: bold;
+	}
+}
+
+.carousel-item {
+	padding: 0 1rem;
+	transition-duration: 0.5s;
 }
 
 .qb-kicker {
@@ -43,26 +45,10 @@
 	border-radius: 1.25rem;
 }
 
-.qb-section {
-	padding: 1rem 0;
-
-	&:not(:last-child) {
-		border-bottom: 1px solid rgba(20, 30, 50, 0.08);
-	}
-
-	.qb-section-head {
-		h2 {
-			margin: 0 0 1rem;
-			font-size: 1rem;
-			font-weight: 700;
-			letter-spacing: 0.02em;
-			text-transform: uppercase;
-			color: #273247;
-		}
-	}
-}
-
 .qb-path-item {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 	padding: 1rem;
 	margin-bottom: 1rem;
 	background: rgba(255, 255, 255, 0.75);
@@ -96,4 +82,14 @@
 	background: #0f172a;
 	color: #e2e8f0;
 	border-radius: 1rem;
+}
+
+.qb-query-options {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.qb-submit {
+	margin-top: 1rem;
 }

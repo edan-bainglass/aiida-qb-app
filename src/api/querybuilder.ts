@@ -1,53 +1,9 @@
-export type QueryBuilderPathItem = {
-  entity_type: string | string[];
-  orm_base: string;
-  tag?: string;
-  joining_keyword?: string;
-  joining_value?: string;
-  edge_tag?: string;
-  outerjoin?: boolean;
-};
-
-export type QueryBuilderRequest = {
-  path: Array<string | QueryBuilderPathItem>;
-  filters?: Record<string, unknown>;
-  project?: Record<string, string | string[]>;
-  limit?: number;
-  offset?: number;
-  order_by?: string | string[] | Record<string, unknown>;
-  distinct?: boolean;
-};
-
-export type QueryBuilderResponse = {
-  data?: {
-    attributes?: {
-      results?: unknown[];
-    };
-    meta?: {
-      total?: number;
-      page?: number;
-      page_size?: number;
-    };
-  };
-  results?: unknown[];
-  meta?: {
-    total?: number;
-    page?: number;
-    page_size?: number;
-  };
-};
-
-export type QueryBuilderRunOptions = {
-  flat?: boolean;
-  full?: boolean;
-  apiBaseUrl?: string;
-  signal?: AbortSignal;
-};
-
-export type QueryBuilderError = {
-  message: string;
-  details?: unknown;
-};
+import type {
+  QueryBuilderRequest,
+  QueryBuilderRunOptions,
+  QueryBuilderResponse,
+  QueryBuilderError,
+} from "../types/query";
 
 const DEFAULT_API_BASE_URL = "/v0";
 
@@ -167,7 +123,7 @@ export async function runQueryBuilder(
   };
 }
 
-export async function getEntityTypes(apiBaseUrl?: string): Promise<string[]> {
+export async function getNodeTypes(apiBaseUrl?: string): Promise<string[]> {
   const apiUrl = `${getApiBaseUrl(apiBaseUrl)}/nodes/types`;
   const response = await fetch(apiUrl, {
     headers: {
@@ -177,21 +133,17 @@ export async function getEntityTypes(apiBaseUrl?: string): Promise<string[]> {
 
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch entity types: ${response.status} ${response.statusText}`,
+      `Failed to fetch node types: ${response.status} ${response.statusText}`,
     );
   }
 
-  const payload = (await response.json().catch(() => null)) as {
-    data?: Array<{ attributes?: { node_type: string } }>;
-  } | null;
+  const payload = (await response.json().catch(() => null)) as
+    | { node_type: string }[]
+    | null;
 
-  if (!payload || !Array.isArray(payload.data)) {
-    throw new Error("Invalid response format when fetching entity types");
+  if (!payload || !Array.isArray(payload)) {
+    throw new Error("Invalid response format when fetching node types");
   }
 
-  return {
-    ...payload.data
-      .map((item) => item.attributes?.node_type)
-      .filter((type): type is string => typeof type === "string"),
-  };
+  return payload.map((item) => item.node_type);
 }
