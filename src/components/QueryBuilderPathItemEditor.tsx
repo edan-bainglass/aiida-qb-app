@@ -4,18 +4,18 @@ import { Col, Form, Row } from "react-bootstrap";
 
 import { getNodeTypes } from "../api/querybuilder";
 import { ENTITY_TYPES } from "../types/entities";
-import type { QueryBuilderItemEditor } from "../types/query";
+import type { QueryBuilderPathItem } from "../types/query";
 
 interface PathItemEditorProps {
-  item: QueryBuilderItemEditor;
+  item: QueryBuilderPathItem;
   index: number;
   updatePathItem: (
     index: number,
-    updatedItem: Partial<QueryBuilderItemEditor>,
+    updatedItem: Partial<QueryBuilderPathItem>,
   ) => void;
 }
 
-export const QueryBuilderPathItem: React.FC<PathItemEditorProps> = ({
+export const QueryBuilderPathItemEditor: React.FC<PathItemEditorProps> = ({
   item,
   index,
   updatePathItem,

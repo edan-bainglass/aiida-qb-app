@@ -1,11 +1,8 @@
-import type {
-  QueryBuilderPathItem,
-  QueryBuilderItemEditor,
-} from "../types/query";
+import type { QueryBuilderPathItem } from "../types/query";
 
-export const createItemEditor = (
+export const createPathItem = (
   item?: string | QueryBuilderPathItem,
-): QueryBuilderItemEditor => {
+): QueryBuilderPathItem => {
   return {
     entity_type:
       typeof item === "string"
@@ -33,16 +30,10 @@ export const createItemEditor = (
 };
 
 export const serializeItem = (
-  item: QueryBuilderItemEditor,
+  item: QueryBuilderPathItem,
 ): string | QueryBuilderPathItem => {
-  const entityType = item.entity_type
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-
   const pathItem: QueryBuilderPathItem = {
-    entity_type:
-      entityType.length > 1 ? entityType : (entityType[0] ?? item.entity_type),
+    entity_type: item.entity_type,
     orm_base: item.orm_base,
     tag: item.tag || undefined,
     joining_keyword: item.joining_keyword || undefined,

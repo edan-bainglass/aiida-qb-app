@@ -1,5 +1,5 @@
 export type QueryBuilderPathItem = {
-  entity_type: string | string[];
+  entity_type: string;
   orm_base: string;
   tag?: string;
   joining_keyword?: string;
@@ -19,21 +19,13 @@ export type QueryBuilderRequest = {
 };
 
 export type QueryBuilderResponse = {
-  data?: {
-    attributes?: {
-      results?: unknown[];
-    };
-    meta?: {
-      total?: number;
-      page?: number;
-      page_size?: number;
-    };
-  };
-  results?: unknown[];
   meta?: {
     total?: number;
     page?: number;
     page_size?: number;
+  };
+  data?: {
+    attributes?: Record<string, unknown>;
   };
 };
 
@@ -47,14 +39,4 @@ export type QueryBuilderRunOptions = {
 export type QueryBuilderError = {
   message: string;
   details?: unknown;
-};
-
-export type QueryBuilderItemEditor = {
-  entity_type: string;
-  orm_base: string;
-  tag: string;
-  joining_keyword: string;
-  joining_value: string;
-  edge_tag: string;
-  outerjoin: boolean;
 };
