@@ -4,6 +4,7 @@ import { Carousel, Container } from "react-bootstrap";
 
 import { runQueryBuilder } from "./api/querybuilder";
 import { QueryBuilderEditor, QueryBuilderResults } from "./components";
+import aiidaLogo from "./assets/img/aiida-logo.svg";
 import type {
   QueryBuilderError,
   QueryBuilderPathItem,
@@ -82,7 +83,7 @@ const App = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img src="src/assets/img/aiida-logo.svg" alt="AiiDA Logo" />
+          <img src={aiidaLogo} alt="AiiDA Logo" />
         </a>
         <div>
           <code>QueryBuilder</code>
