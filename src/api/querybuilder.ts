@@ -5,13 +5,28 @@ import type {
   QueryBuilderError,
 } from "../types/query";
 
-const DEFAULT_API_BASE_URL = "/v0";
+export function normalizePathPrefix(
+  value: string | undefined,
+  fallback: string = "",
+): string {
+  const raw = (value ?? fallback).trim();
+  if (!raw) {
+    return fallback;
+  }
+  const withLeadingSlash = raw.startsWith("/") ? raw : `/${raw}`;
+  return withLeadingSlash.replace(/\/$/, "") || "/";
+}
 
 function getApiBaseUrl(apiBaseUrl?: string): string {
+  const configuredProxyRootPath = normalizePathPrefix(
+    import.meta.env.VITE_REST_API_PROXY_ROOT_PATH,
+  );
+  const configuredVersionPrefix = normalizePathPrefix(
+    import.meta.env.VITE_REST_API_VERSION_PREFIX,
+  );
+
   return (
-    apiBaseUrl ??
-    import.meta.env.VITE_API_BASE_URL ??
-    DEFAULT_API_BASE_URL
+    apiBaseUrl ?? `${configuredProxyRootPath}${configuredVersionPrefix}`
   ).replace(/\/$/, "");
 }
 
