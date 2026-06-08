@@ -200,7 +200,7 @@ const App = () => {
                 <h2>Query</h2>
                 <div className="qb-section">
                   {pathItems.map((item, index) => (
-                    <div key={`${item.tag}-${index}`}>
+                    <div key={`path-item-${index}`}>
                       <QueryBuilderPathItem
                         item={item}
                         index={index}
