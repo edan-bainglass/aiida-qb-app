@@ -110,8 +110,8 @@ export async function runQueryBuilder(
     } satisfies QueryBuilderError;
   }
 
-  const meta = payload?.data?.meta ?? payload?.meta ?? {};
-  const results = payload?.data?.attributes?.results ?? payload?.results ?? [];
+  const meta = payload?.meta ?? {};
+  const results = payload?.data?.attributes?.results ?? [];
 
   return {
     results,

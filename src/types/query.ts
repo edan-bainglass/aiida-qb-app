@@ -25,7 +25,9 @@ export type QueryBuilderResponse = {
     page_size?: number;
   };
   data?: {
-    attributes?: Record<string, unknown>;
+    attributes?: {
+      results?: unknown[];
+    };
   };
 };
 
