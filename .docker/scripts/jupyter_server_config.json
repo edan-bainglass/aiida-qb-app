@@ -1,0 +1,50 @@
+{
+  "ServerApp": {
+    "token": "",
+    "password": ""
+  },
+  "ServerProxy": {
+    "servers": {
+      "apps/querybuilder": {
+        "command": [
+          "python",
+          "-m",
+          "http.server",
+          "{port}",
+          "--bind",
+          "127.0.0.1",
+          "--directory",
+          "/home/jovyan/aiida-qb-app"
+        ],
+        "port": 8080,
+        "timeout": 30,
+        "absolute_url": false,
+        "launcher_entry": {
+          "enabled": true,
+          "title": "AiiDA QueryBuilder",
+          "icon_path": "/home/jovyan/aiida-qb-app/favicon.svg"
+        }
+      },
+      "aiida/api": {
+        "command": [
+          "aiida-restapi",
+          "start",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "{port}",
+          "--root-path",
+          "{base_url}aiida/api"
+        ],
+        "port": 8000,
+        "timeout": 30,
+        "absolute_url": false,
+        "launcher_entry": {
+          "enabled": true,
+          "title": "AiiDA REST API",
+          "icon_path": "/home/jovyan/aiida-qb-app/favicon.svg"
+        }
+      }
+    }
+  }
+}
