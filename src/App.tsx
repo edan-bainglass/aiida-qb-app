@@ -21,12 +21,7 @@ import type {
   QueryBuilderItemEditor,
   QueryBuilderRequest,
 } from "./types/query";
-import {
-  createItemEditor,
-  parseJsonInput,
-  serializeItem,
-  toTableData,
-} from "./utils/query";
+import { createItemEditor, serializeItem, toTableData } from "./utils/query";
 
 import "./App.scss";
 
@@ -41,7 +36,6 @@ const App = () => {
   const [distinct, setDistinct] = useState(false);
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
-  const [orderByJson, setOrderByJson] = useState("");
 
   // Results state
   const [results, setResults] = useState<unknown[]>([]);
@@ -69,20 +63,7 @@ const App = () => {
     setIndex(1);
 
     try {
-      const orderBy = parseJsonInput(orderByJson);
-      if (orderBy.error) {
-        throw {
-          message: `Order by: ${orderBy.error}`,
-        } satisfies QueryBuilderError;
-      }
-
-      const response = await runQueryBuilder(
-        {
-          ...request,
-          order_by: orderBy.value,
-        },
-        { flat, full },
-      );
+      const response = await runQueryBuilder(request, { flat, full });
       setResults(response.results);
       setMeta(response.meta);
     } catch (error) {
@@ -108,20 +89,6 @@ const App = () => {
   const QueryOptions = () => {
     return (
       <div className="qb-query-options">
-        <Row>
-          <Col>
-            <Form.Label>Order by</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={orderByJson}
-              onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setOrderByJson(event.target.value)
-              }
-              placeholder='{"pk": "desc"}'
-            />
-          </Col>
-        </Row>
         <Row className="g-3">
           <Col md={2}>
             <Form.Label>Limit</Form.Label>

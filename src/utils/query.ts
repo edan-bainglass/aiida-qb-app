@@ -32,31 +32,6 @@ export const createItemEditor = (
   };
 };
 
-export const parseJsonInput = (
-  input: string,
-): {
-  value?: Record<string, unknown>;
-  error?: string;
-} => {
-  const trimmed = input.trim();
-
-  if (!trimmed) {
-    return {};
-  }
-
-  try {
-    const parsed = JSON.parse(trimmed);
-
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      return { error: "Expected a JSON object." };
-    }
-
-    return { value: parsed as Record<string, unknown> };
-  } catch (error) {
-    return { error: error instanceof Error ? error.message : "Invalid JSON." };
-  }
-};
-
 export const serializeItem = (
   item: QueryBuilderItemEditor,
 ): string | QueryBuilderPathItem => {
