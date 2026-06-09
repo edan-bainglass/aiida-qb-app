@@ -4,7 +4,11 @@ import { Card, Carousel, Col, Container, Row } from "react-bootstrap";
 
 import { submitRequest } from "@/api/querybuilder";
 import aiidaLogo from "@/assets/img/aiida-logo.svg";
-import { QueryBuilderEditor, QueryBuilderResults } from "@/components";
+import {
+  QueryBuilderEditor,
+  QueryBuilderPreview,
+  QueryBuilderResults,
+} from "@/components";
 import type {
   QueryBuilderError,
   QueryBuilderPathItem,
@@ -117,8 +121,7 @@ const App = () => {
             <Col xl={5}>
               <Card className="qb-card qb-preview-card">
                 <Card.Body>
-                  <h2>Preview</h2>
-                  <pre>{JSON.stringify(request, null, 2)}</pre>
+                  <QueryBuilderPreview request={request} />
                 </Card.Body>
               </Card>
             </Col>
