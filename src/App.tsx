@@ -2,15 +2,15 @@ import { useMemo, useState } from "react";
 
 import { Carousel, Container } from "react-bootstrap";
 
-import { runQueryBuilder } from "./api/querybuilder";
-import { QueryBuilderEditor, QueryBuilderResults } from "./components";
-import aiidaLogo from "./assets/img/aiida-logo.svg";
+import { runQueryBuilder } from "@/api/querybuilder";
+import aiidaLogo from "@/assets/img/aiida-logo.svg";
+import { QueryBuilderEditor, QueryBuilderResults } from "@/components";
 import type {
   QueryBuilderError,
   QueryBuilderPathItem,
   QueryBuilderRequest,
-} from "./types/query";
-import { createPathItem, serializeItem } from "./utils/query";
+} from "@/types/query";
+import { createPathItem, serializeItem } from "@/utils/query";
 
 import "./App.scss";
 

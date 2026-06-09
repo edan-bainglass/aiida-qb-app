@@ -23,10 +23,7 @@
 
     /* Path aliases */
     "paths": {
-      "@types": ["./src/types"],
-      "@utils": ["./src/utils"],
-      "@components": ["./src/components"],
-      "@api": ["./src/api"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"]

@@ -3,7 +3,7 @@ import type {
   QueryBuilderRunOptions,
   QueryBuilderResponse,
   QueryBuilderError,
-} from "../types/query";
+} from "@/types/query";
 
 export function normalizePathPrefix(
   value: string | undefined,

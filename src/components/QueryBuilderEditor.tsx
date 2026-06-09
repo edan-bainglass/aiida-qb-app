@@ -1,6 +1,7 @@
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
 
-import type { QueryBuilderPathItem, QueryBuilderRequest } from "../types/query";
+import type { QueryBuilderPathItem, QueryBuilderRequest } from "@/types/query";
+
 import { QueryBuilderPathItemEditor } from "./QueryBuilderPathItemEditor";
 
 interface QueryBuilderWorkspaceProps {

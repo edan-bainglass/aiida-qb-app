@@ -1,7 +1,7 @@
 import { Alert, Badge, Card, Spinner, Table } from "react-bootstrap";
 
-import type { QueryBuilderError } from "../types/query";
-import { toTableData } from "../utils/query";
+import type { QueryBuilderError } from "@/types/query";
+import { toTableData } from "@/utils/query";
 
 interface QueryBuilderResultsProps {
   results: unknown[];

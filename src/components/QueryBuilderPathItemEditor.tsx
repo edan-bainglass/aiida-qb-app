@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Col, Form, Row } from "react-bootstrap";
 
-import { getNodeTypes } from "../api/querybuilder";
-import { ENTITY_TYPES } from "../types/entities";
-import type { QueryBuilderPathItem } from "../types/query";
+import { getNodeTypes } from "@/api/querybuilder";
+import { ENTITY_TYPES } from "@/types/entities";
+import type { QueryBuilderPathItem } from "@/types/query";
 
 interface PathItemEditorProps {
   item: QueryBuilderPathItem;

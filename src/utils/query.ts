@@ -1,4 +1,4 @@
-import type { QueryBuilderPathItem } from "../types/query";
+import type { QueryBuilderPathItem } from "@/types/query";
 
 export const createPathItem = (
   item?: string | QueryBuilderPathItem,

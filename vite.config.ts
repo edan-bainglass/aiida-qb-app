@@ -34,10 +34,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        "@types": "/src/types",
-        "@utils": "/src/utils",
-        "@components": "/src/components",
-        "@api": "/src/api",
+        "@": "/src",
       },
     },
   };
