@@ -1,9 +1,5 @@
 import type { QueryBuilderRequest } from "@/types/query";
 
-interface QueryBuilderPreviewProps {
-  request: QueryBuilderRequest;
-}
-
 export const QueryBuilderPreview: React.FC<QueryBuilderPreviewProps> = ({
   request,
 }) => {
@@ -14,3 +10,7 @@ export const QueryBuilderPreview: React.FC<QueryBuilderPreviewProps> = ({
     </div>
   );
 };
+
+interface QueryBuilderPreviewProps {
+  request: QueryBuilderRequest;
+}

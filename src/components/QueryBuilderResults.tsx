@@ -3,18 +3,6 @@ import { Alert, Badge, Spinner, Table } from "react-bootstrap";
 import type { QueryBuilderError } from "@/types/query";
 import { toTableData } from "@/utils/query";
 
-interface QueryBuilderResultsProps {
-  results: unknown[];
-  error: QueryBuilderError | null;
-  loading: boolean;
-  meta: {
-    total: number;
-    page: number;
-    pageSize: number;
-  } | null;
-  onBack: () => void;
-}
-
 export const QueryBuilderResults: React.FC<QueryBuilderResultsProps> = ({
   results,
   error,
@@ -75,3 +63,15 @@ export const QueryBuilderResults: React.FC<QueryBuilderResultsProps> = ({
     </div>
   );
 };
+
+interface QueryBuilderResultsProps {
+  results: unknown[];
+  error: QueryBuilderError | null;
+  loading: boolean;
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+  } | null;
+  onBack: () => void;
+}

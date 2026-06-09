@@ -6,26 +6,6 @@ import { getNodeTypes } from "@/api/querybuilder";
 import { ENTITY_TYPES } from "@/types/entities";
 import type { QueryBuilderPathItem } from "@/types/query";
 
-interface QueryBuilderEditorProps {
-  pathItems: QueryBuilderPathItem[];
-  limit: number;
-  setLimit: (limit: number) => void;
-  offset: number;
-  setOffset: (offset: number) => void;
-  distinct: boolean;
-  setDistinct: (distinct: boolean) => void;
-  flat: boolean;
-  setFlat: (flat: boolean) => void;
-  full: boolean;
-  setFull: (full: boolean) => void;
-  loading: boolean;
-  updatePathItem: (
-    index: number,
-    updatedItem: Partial<QueryBuilderPathItem>,
-  ) => void;
-  handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
-}
-
 export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
   pathItems,
   limit,
@@ -74,14 +54,6 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
   );
 };
 
-interface QueryBuilderPathEditorProps {
-  pathItems: QueryBuilderPathItem[];
-  updatePathItem: (
-    index: number,
-    updatedItem: Partial<QueryBuilderPathItem>,
-  ) => void;
-}
-
 const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
   pathItems,
   updatePathItem,
@@ -100,15 +72,6 @@ const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
     </div>
   );
 };
-
-interface QueryBuilderPathItemEditorProps {
-  item: QueryBuilderPathItem;
-  index: number;
-  updatePathItem: (
-    index: number,
-    updatedItem: Partial<QueryBuilderPathItem>,
-  ) => void;
-}
 
 const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
   item,
@@ -256,19 +219,6 @@ const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
   );
 };
 
-interface QueryBuilderOptionsEditorProps {
-  limit: number;
-  setLimit: (limit: number) => void;
-  offset: number;
-  setOffset: (offset: number) => void;
-  distinct: boolean;
-  setDistinct: (distinct: boolean) => void;
-  flat: boolean;
-  setFlat: (flat: boolean) => void;
-  full: boolean;
-  setFull: (full: boolean) => void;
-}
-
 const QueryBuilderOptionsEditor: React.FC<QueryBuilderOptionsEditorProps> = ({
   limit,
   setLimit,
@@ -341,10 +291,6 @@ const QueryBuilderOptionsEditor: React.FC<QueryBuilderOptionsEditorProps> = ({
   );
 };
 
-interface QueryBuilderSubmissionControlsProps {
-  loading: boolean;
-}
-
 const QueryBuilderSubmissionControls: React.FC<
   QueryBuilderSubmissionControlsProps
 > = ({ loading }) => {
@@ -356,3 +302,57 @@ const QueryBuilderSubmissionControls: React.FC<
     </div>
   );
 };
+
+interface QueryBuilderEditorProps {
+  pathItems: QueryBuilderPathItem[];
+  limit: number;
+  setLimit: (limit: number) => void;
+  offset: number;
+  setOffset: (offset: number) => void;
+  distinct: boolean;
+  setDistinct: (distinct: boolean) => void;
+  flat: boolean;
+  setFlat: (flat: boolean) => void;
+  full: boolean;
+  setFull: (full: boolean) => void;
+  loading: boolean;
+  updatePathItem: (
+    index: number,
+    updatedItem: Partial<QueryBuilderPathItem>,
+  ) => void;
+  handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
+}
+
+interface QueryBuilderPathEditorProps {
+  pathItems: QueryBuilderPathItem[];
+  updatePathItem: (
+    index: number,
+    updatedItem: Partial<QueryBuilderPathItem>,
+  ) => void;
+}
+
+interface QueryBuilderPathItemEditorProps {
+  item: QueryBuilderPathItem;
+  index: number;
+  updatePathItem: (
+    index: number,
+    updatedItem: Partial<QueryBuilderPathItem>,
+  ) => void;
+}
+
+interface QueryBuilderOptionsEditorProps {
+  limit: number;
+  setLimit: (limit: number) => void;
+  offset: number;
+  setOffset: (offset: number) => void;
+  distinct: boolean;
+  setDistinct: (distinct: boolean) => void;
+  flat: boolean;
+  setFlat: (flat: boolean) => void;
+  full: boolean;
+  setFull: (full: boolean) => void;
+}
+
+interface QueryBuilderSubmissionControlsProps {
+  loading: boolean;
+}
