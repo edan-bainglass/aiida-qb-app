@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { Carousel, Container } from "react-bootstrap";
+import { Card, Carousel, Col, Container, Row } from "react-bootstrap";
 
 import { submitRequest } from "@/api/querybuilder";
 import aiidaLogo from "@/assets/img/aiida-logo.svg";
@@ -91,32 +91,51 @@ const App = () => {
       </header>
       <Carousel indicators={false} controls={false} activeIndex={index}>
         <Carousel.Item>
-          <QueryBuilderEditor
-            pathItems={pathItems}
-            limit={limit}
-            setLimit={setLimit}
-            offset={offset}
-            setOffset={setOffset}
-            distinct={distinct}
-            setDistinct={setDistinct}
-            flat={flat}
-            setFlat={setFlat}
-            full={full}
-            setFull={setFull}
-            loading={loading}
-            updatePathItem={updatePathItem}
-            handleSubmit={handleSubmit}
-            request={request}
-          />
+          <Row>
+            <Col xl={7}>
+              <Card className="qb-card">
+                <Card.Body>
+                  <QueryBuilderEditor
+                    pathItems={pathItems}
+                    limit={limit}
+                    setLimit={setLimit}
+                    offset={offset}
+                    setOffset={setOffset}
+                    distinct={distinct}
+                    setDistinct={setDistinct}
+                    flat={flat}
+                    setFlat={setFlat}
+                    full={full}
+                    setFull={setFull}
+                    loading={loading}
+                    updatePathItem={updatePathItem}
+                    handleSubmit={handleSubmit}
+                  />
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col xl={5}>
+              <Card className="qb-card qb-preview-card">
+                <Card.Body>
+                  <h2>Preview</h2>
+                  <pre>{JSON.stringify(request, null, 2)}</pre>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
         </Carousel.Item>
         <Carousel.Item>
-          <QueryBuilderResults
-            results={results}
-            error={error}
-            loading={loading}
-            meta={meta}
-            onBack={() => setIndex(0)}
-          />
+          <Card className="qb-card qb-results-card">
+            <Card.Body>
+              <QueryBuilderResults
+                results={results}
+                error={error}
+                loading={loading}
+                meta={meta}
+                onBack={() => setIndex(0)}
+              />
+            </Card.Body>
+          </Card>
         </Carousel.Item>
       </Carousel>
     </Container>

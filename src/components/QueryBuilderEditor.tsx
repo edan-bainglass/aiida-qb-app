@@ -1,10 +1,10 @@
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 
-import type { QueryBuilderPathItem, QueryBuilderRequest } from "@/types/query";
+import type { QueryBuilderPathItem } from "@/types/query";
 
 import { QueryBuilderPathItemEditor } from "./QueryBuilderPathItemEditor";
 
-interface QueryBuilderWorkspaceProps {
+interface QueryBuilderEditorProps {
   pathItems: QueryBuilderPathItem[];
   limit: number;
   setLimit: (limit: number) => void;
@@ -22,10 +22,9 @@ interface QueryBuilderWorkspaceProps {
     updatedItem: Partial<QueryBuilderPathItem>,
   ) => void;
   handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
-  request: QueryBuilderRequest;
 }
 
-export const QueryBuilderEditor: React.FC<QueryBuilderWorkspaceProps> = ({
+export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
   pathItems,
   limit,
   setLimit,
@@ -40,56 +39,41 @@ export const QueryBuilderEditor: React.FC<QueryBuilderWorkspaceProps> = ({
   loading,
   updatePathItem,
   handleSubmit,
-  request,
 }) => {
   return (
-    <Row>
-      <Col xl={7}>
-        <Card className="qb-card">
-          <Card.Body>
-            <Form onSubmit={handleSubmit}>
-              <h2>Query</h2>
-              <div className="qb-section">
-                {pathItems.map((item, index) => (
-                  <div key={`path-item-${index}`}>
-                    <QueryBuilderPathItemEditor
-                      item={item}
-                      index={index}
-                      updatePathItem={updatePathItem}
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="qb-section">
-                <QueryBuilderOptionsEditor
-                  limit={limit}
-                  setLimit={setLimit}
-                  offset={offset}
-                  setOffset={setOffset}
-                  distinct={distinct}
-                  setDistinct={setDistinct}
-                  flat={flat}
-                  setFlat={setFlat}
-                  full={full}
-                  setFull={setFull}
-                />
-              </div>
-              <div className="qb-section">
-                <QueryBuilderSubmissionControls loading={loading} />
-              </div>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col xl={5}>
-        <Card className="qb-card qb-preview-card">
-          <Card.Body>
-            <h2>Request preview</h2>
-            <pre>{JSON.stringify(request, null, 2)}</pre>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
+    <div className="qb-editor">
+      <Form onSubmit={handleSubmit}>
+        <h2>Query</h2>
+        <div className="qb-section">
+          {pathItems.map((item, index) => (
+            <div key={`path-item-${index}`}>
+              <QueryBuilderPathItemEditor
+                item={item}
+                index={index}
+                updatePathItem={updatePathItem}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="qb-section">
+          <QueryBuilderOptionsEditor
+            limit={limit}
+            setLimit={setLimit}
+            offset={offset}
+            setOffset={setOffset}
+            distinct={distinct}
+            setDistinct={setDistinct}
+            flat={flat}
+            setFlat={setFlat}
+            full={full}
+            setFull={setFull}
+          />
+        </div>
+        <div className="qb-section">
+          <QueryBuilderSubmissionControls loading={loading} />
+        </div>
+      </Form>
+    </div>
   );
 };
 
