@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { Carousel, Container } from "react-bootstrap";
 
-import { runQueryBuilder } from "@/api/querybuilder";
+import { submitRequest } from "@/api/querybuilder";
 import aiidaLogo from "@/assets/img/aiida-logo.svg";
 import { QueryBuilderEditor, QueryBuilderResults } from "@/components";
 import type {
@@ -63,7 +63,7 @@ const App = () => {
     setIndex(1);
 
     try {
-      const response = await runQueryBuilder(request, { flat, full });
+      const response = await submitRequest(request, { flat, full });
       setResults(response.results);
       setMeta(response.meta);
     } catch (error) {

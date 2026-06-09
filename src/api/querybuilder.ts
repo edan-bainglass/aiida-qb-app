@@ -80,7 +80,7 @@ function readErrorMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
-export async function runQueryBuilder(
+export async function submitRequest(
   request: QueryBuilderRequest,
   options: QueryBuilderRunOptions = {},
 ): Promise<{
