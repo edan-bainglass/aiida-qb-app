@@ -6,6 +6,8 @@ import { getNodeTypes } from "@/api/querybuilder";
 import { ENTITY_TYPES } from "@/types/entities";
 import type { QueryBuilderPathItem } from "@/types/query";
 
+import "./QueryBuilderEditor.scss";
+
 export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
   pathItems,
   limit,
@@ -23,28 +25,30 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
   handleSubmit,
 }) => {
   return (
-    <div className="qb-editor">
+    <div id="qb-editor">
+      <h2>Query</h2>
       <Form onSubmit={handleSubmit}>
-        <h2>Query</h2>
-        <div className="qb-section">
-          <QueryBuilderPathEditor
-            pathItems={pathItems}
-            updatePathItem={updatePathItem}
-          />
-        </div>
-        <div className="qb-section">
-          <QueryBuilderOptionsEditor
-            limit={limit}
-            setLimit={setLimit}
-            offset={offset}
-            setOffset={setOffset}
-            distinct={distinct}
-            setDistinct={setDistinct}
-            flat={flat}
-            setFlat={setFlat}
-            full={full}
-            setFull={setFull}
-          />
+        <div id="qb-input">
+          <div className="qb-section">
+            <QueryBuilderPathEditor
+              pathItems={pathItems}
+              updatePathItem={updatePathItem}
+            />
+          </div>
+          <div className="qb-section">
+            <QueryBuilderOptionsEditor
+              limit={limit}
+              setLimit={setLimit}
+              offset={offset}
+              setOffset={setOffset}
+              distinct={distinct}
+              setDistinct={setDistinct}
+              flat={flat}
+              setFlat={setFlat}
+              full={full}
+              setFull={setFull}
+            />
+          </div>
         </div>
         <div className="qb-section">
           <QueryBuilderSubmissionControls loading={loading} />
@@ -59,7 +63,7 @@ const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
   updatePathItem,
 }) => {
   return (
-    <div className="qb-path-editor">
+    <div id="qb-path-editor">
       {pathItems.map((item, index) => (
         <div key={`path-item-${index}`}>
           <QueryBuilderPathItemEditor
@@ -232,7 +236,7 @@ const QueryBuilderOptionsEditor: React.FC<QueryBuilderOptionsEditorProps> = ({
   setFull,
 }) => {
   return (
-    <div className="qb-query-options">
+    <div id="qb-query-options">
       <Row className="g-3">
         <Col md={2}>
           <Form.Label>Limit</Form.Label>
@@ -295,7 +299,7 @@ const QueryBuilderSubmissionControls: React.FC<
   QueryBuilderSubmissionControlsProps
 > = ({ loading }) => {
   return (
-    <div className="qb-submit">
+    <div id="qb-submit">
       <Button type="submit" size="lg" variant="dark" disabled={loading}>
         {loading ? "Running..." : "Run query"}
       </Button>

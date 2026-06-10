@@ -119,7 +119,7 @@ const App = () => {
               </Card>
             </Col>
             <Col xl={5}>
-              <Card className="qb-card qb-preview-card">
+              <Card className="qb-card">
                 <Card.Body>
                   <QueryBuilderPreview request={request} />
                 </Card.Body>
@@ -128,7 +128,7 @@ const App = () => {
           </Row>
         </Carousel.Item>
         <Carousel.Item>
-          <Card className="qb-card qb-results-card">
+          <Card className="qb-card">
             <Card.Body>
               <QueryBuilderResults
                 results={results}

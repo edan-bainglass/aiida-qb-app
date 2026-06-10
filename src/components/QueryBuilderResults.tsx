@@ -3,6 +3,8 @@ import { Alert, Badge, Spinner, Table } from "react-bootstrap";
 import type { QueryBuilderError } from "@/types/query";
 import { toTableData } from "@/utils/query";
 
+import "./QueryBuilderResults.scss";
+
 export const QueryBuilderResults: React.FC<QueryBuilderResultsProps> = ({
   results,
   error,
@@ -11,14 +13,14 @@ export const QueryBuilderResults: React.FC<QueryBuilderResultsProps> = ({
   onBack,
 }) => {
   return (
-    <div className="qb-results">
-      <div className="qb-section-head">
+    <div id="qb-results">
+      <div id="qb-results-header">
         <button className="btn btn-secondary btn-sm" onClick={onBack}>
           Back
         </button>
         <h2>Results</h2>
         {meta ? (
-          <div className="qb-meta">
+          <div id="qb-meta">
             <Badge bg="secondary">Total {meta.total}</Badge>
             <Badge bg="secondary">Page {meta.page}</Badge>
             <Badge bg="secondary">Size {meta.pageSize}</Badge>
@@ -37,7 +39,7 @@ export const QueryBuilderResults: React.FC<QueryBuilderResultsProps> = ({
           <p className="mb-0">{error.message}</p>
         </Alert>
       ) : results.length > 0 ? (
-        <div className="qb-table-wrap">
+        <div id="qb-table-wrap">
           <Table striped bordered hover responsive size="sm">
             <thead>
               <tr>
@@ -58,7 +60,7 @@ export const QueryBuilderResults: React.FC<QueryBuilderResultsProps> = ({
           </Table>
         </div>
       ) : (
-        <div className="qb-empty">Run a query to see results here.</div>
+        <div id="qb-empty">Run a query to see results here.</div>
       )}
     </div>
   );
