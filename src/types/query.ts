@@ -1,4 +1,4 @@
-export type QueryBuilderPathItem = {
+export type QbPathItem = {
   entity_type: string;
   orm_base: string;
   tag?: string;
@@ -8,8 +8,8 @@ export type QueryBuilderPathItem = {
   outerjoin?: boolean;
 };
 
-export type QueryBuilderRequest = {
-  path: Array<string | QueryBuilderPathItem>;
+export type QbRequest = {
+  path: Array<string | QbPathItem>;
   filters?: Record<string, unknown>;
   project?: Record<string, string | string[]>;
   limit?: number;
@@ -18,7 +18,7 @@ export type QueryBuilderRequest = {
   distinct?: boolean;
 };
 
-export type QueryBuilderResponse = {
+export type QbResponse = {
   meta?: {
     total?: number;
     page?: number;
@@ -31,14 +31,14 @@ export type QueryBuilderResponse = {
   };
 };
 
-export type QueryBuilderRunOptions = {
+export type QbOptions = {
   flat?: boolean;
   full?: boolean;
   apiBaseUrl?: string;
   signal?: AbortSignal;
 };
 
-export type QueryBuilderError = {
+export type QbError = {
   message: string;
   details?: unknown;
 };

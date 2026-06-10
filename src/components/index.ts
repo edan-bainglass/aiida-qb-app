@@ -1,3 +1,3 @@
-export { QueryBuilderEditor } from "./QueryBuilderEditor";
-export { QueryBuilderResults } from "./QueryBuilderResults";
-export { QueryBuilderPreview } from "./QueryBuilderPreview";
+export { QbEditor as QueryBuilderEditor } from "./QbEditor";
+export { QbResults as QueryBuilderResults } from "./QbResults";
+export { QbPreview as QueryBuilderPreview } from "./QbPreview";

@@ -1,15 +1,15 @@
 import { Button, Col, Form, Row } from "react-bootstrap";
 
 import { useEffect, useMemo, useState } from "react";
+import { IoMdClose } from "react-icons/io";
 
 import { getNodeTypes } from "@/api/querybuilder";
 import { ENTITY_TYPES, GROUP_TYPES } from "@/types/entities";
-import type { QueryBuilderPathItem } from "@/types/query";
+import type { QbPathItem } from "@/types/query";
 
-import "./QueryBuilderEditor.scss";
-import { IoMdClose } from "react-icons/io";
+import "./QbEditor.scss";
 
-export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
+export const QbEditor: React.FC<QbEditorProps> = ({
   pathItems,
   setPathItems,
   limit,
@@ -33,10 +33,7 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
     setPathItems(pathItems.filter((_, currentIndex) => currentIndex !== index));
   };
 
-  const updatePathItem = (
-    index: number,
-    updatedItem: Partial<QueryBuilderPathItem>,
-  ) => {
+  const updatePathItem = (index: number, updatedItem: Partial<QbPathItem>) => {
     setPathItems(
       pathItems.map((item, currentIndex) =>
         currentIndex === index ? { ...item, ...updatedItem } : item,
@@ -50,7 +47,7 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
       <Form onSubmit={handleSubmit}>
         <div id="qb-input">
           <div className="qb-section">
-            <QueryBuilderPathEditor
+            <QbPathEditor
               pathItems={pathItems}
               addPathItem={addPathItem}
               removePathItem={removePathItem}
@@ -58,7 +55,7 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
             />
           </div>
           <div className="qb-section">
-            <QueryBuilderOptionsEditor
+            <QbOptionsEditor
               limit={limit}
               setLimit={setLimit}
               offset={offset}
@@ -73,14 +70,14 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
           </div>
         </div>
         <div className="qb-section">
-          <QueryBuilderSubmissionControls loading={loading} />
+          <QbSubmissionControl loading={loading} />
         </div>
       </Form>
     </div>
   );
 };
 
-const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
+const QbPathEditor: React.FC<QbPathEditorProps> = ({
   pathItems,
   addPathItem,
   removePathItem,
@@ -122,7 +119,7 @@ const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
     <div id="qb-path-editor">
       {pathItems.map((item, index) => (
         <div key={`path-item-${index}`}>
-          <QueryBuilderPathItemEditor
+          <QbPathItemEditor
             index={index}
             item={item}
             types={types}
@@ -140,7 +137,7 @@ const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
   );
 };
 
-const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
+const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
   index,
   item,
   types,
@@ -267,7 +264,7 @@ const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
   );
 };
 
-const QueryBuilderOptionsEditor: React.FC<QueryBuilderOptionsEditorProps> = ({
+const QbOptionsEditor: React.FC<QbOptionsEditorProps> = ({
   limit,
   setLimit,
   offset,
@@ -339,9 +336,9 @@ const QueryBuilderOptionsEditor: React.FC<QueryBuilderOptionsEditorProps> = ({
   );
 };
 
-const QueryBuilderSubmissionControls: React.FC<
-  QueryBuilderSubmissionControlsProps
-> = ({ loading }) => {
+const QbSubmissionControl: React.FC<QbSubmissionControlsProps> = ({
+  loading,
+}) => {
   return (
     <div id="qb-submit">
       <Button type="submit" size="lg" variant="dark" disabled={loading}>
@@ -351,9 +348,9 @@ const QueryBuilderSubmissionControls: React.FC<
   );
 };
 
-interface QueryBuilderEditorProps {
-  pathItems: QueryBuilderPathItem[];
-  setPathItems: (items: QueryBuilderPathItem[]) => void;
+interface QbEditorProps {
+  pathItems: QbPathItem[];
+  setPathItems: (items: QbPathItem[]) => void;
   limit: number;
   setLimit: (limit: number) => void;
   offset: number;
@@ -368,30 +365,24 @@ interface QueryBuilderEditorProps {
   handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
 }
 
-interface QueryBuilderPathEditorProps {
-  pathItems: QueryBuilderPathItem[];
+interface QbPathEditorProps {
+  pathItems: QbPathItem[];
   addPathItem: () => void;
   removePathItem: (index: number) => void;
-  updatePathItem: (
-    index: number,
-    updatedItem: Partial<QueryBuilderPathItem>,
-  ) => void;
+  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-interface QueryBuilderPathItemEditorProps {
+interface QbPathItemEditorProps {
   index: number;
-  item: QueryBuilderPathItem;
+  item: QbPathItem;
   types: string[];
   loadingTypes: boolean;
   errorTypes: string;
   removePathItem: (index: number) => void;
-  updatePathItem: (
-    index: number,
-    updatedItem: Partial<QueryBuilderPathItem>,
-  ) => void;
+  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-interface QueryBuilderOptionsEditorProps {
+interface QbOptionsEditorProps {
   limit: number;
   setLimit: (limit: number) => void;
   offset: number;
@@ -404,6 +395,6 @@ interface QueryBuilderOptionsEditorProps {
   setFull: (full: boolean) => void;
 }
 
-interface QueryBuilderSubmissionControlsProps {
+interface QbSubmissionControlsProps {
   loading: boolean;
 }

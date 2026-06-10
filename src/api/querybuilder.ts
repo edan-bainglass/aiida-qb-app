@@ -1,9 +1,4 @@
-import type {
-  QueryBuilderRequest,
-  QueryBuilderRunOptions,
-  QueryBuilderResponse,
-  QueryBuilderError,
-} from "@/types/query";
+import type { QbRequest, QbOptions, QbResponse, QbError } from "@/types/query";
 
 export function normalizePathPrefix(
   value: string | undefined,
@@ -81,8 +76,8 @@ function readErrorMessage(payload: unknown, fallback: string): string {
 }
 
 export async function submitRequest(
-  request: QueryBuilderRequest,
-  options: QueryBuilderRunOptions = {},
+  request: QbRequest,
+  options: QbOptions = {},
 ): Promise<{
   results: unknown[];
   meta: { total: number; page: number; pageSize: number };
@@ -113,7 +108,7 @@ export async function submitRequest(
 
   const payload = (await response
     .json()
-    .catch(() => null)) as QueryBuilderResponse | null;
+    .catch(() => null)) as QbResponse | null;
 
   if (!response.ok) {
     throw {
@@ -122,7 +117,7 @@ export async function submitRequest(
         `QueryBuilder request failed with status ${response.status}`,
       ),
       details: payload,
-    } satisfies QueryBuilderError;
+    } satisfies QbError;
   }
 
   const meta = payload?.meta ?? {};

@@ -9,7 +9,7 @@ import {
   QueryBuilderPreview,
   QueryBuilderResults,
 } from "@/components";
-import type { QueryBuilderError, QueryBuilderRequest } from "@/types/query";
+import type { QbError, QbRequest } from "@/types/query";
 import { createPathItem, serializeItem } from "@/utils/query";
 
 import "./App.scss";
@@ -30,7 +30,7 @@ const App = () => {
 
   // Results state
   const [results, setResults] = useState<unknown[]>([]);
-  const [error, setError] = useState<QueryBuilderError | null>(null);
+  const [error, setError] = useState<QbError | null>(null);
   const [loading, setLoading] = useState(false);
   const [meta, setMeta] = useState<{
     total: number;
@@ -38,7 +38,7 @@ const App = () => {
     pageSize: number;
   } | null>(null);
 
-  const request = useMemo<QueryBuilderRequest>(() => {
+  const request = useMemo<QbRequest>(() => {
     return {
       path: pathItems.map(serializeItem),
       limit,
@@ -58,7 +58,7 @@ const App = () => {
       setResults(response.results);
       setMeta(response.meta);
     } catch (error) {
-      setError(error as QueryBuilderError);
+      setError(error as QbError);
       setResults([]);
       setMeta(null);
     } finally {

@@ -1,8 +1,6 @@
-import type { QueryBuilderPathItem } from "@/types/query";
+import type { QbPathItem } from "@/types/query";
 
-export const createPathItem = (
-  item?: string | QueryBuilderPathItem,
-): QueryBuilderPathItem => {
+export const createPathItem = (item?: string | QbPathItem): QbPathItem => {
   return {
     entity_type:
       typeof item === "string"
@@ -29,10 +27,8 @@ export const createPathItem = (
   };
 };
 
-export const serializeItem = (
-  item: QueryBuilderPathItem,
-): string | QueryBuilderPathItem => {
-  const pathItem: QueryBuilderPathItem = {
+export const serializeItem = (item: QbPathItem): string | QbPathItem => {
+  const pathItem: QbPathItem = {
     entity_type: item.entity_type,
     orm_base: item.orm_base,
     tag: item.tag || undefined,

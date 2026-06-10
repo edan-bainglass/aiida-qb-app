@@ -1,11 +1,11 @@
 import { Alert, Badge, Spinner, Table } from "react-bootstrap";
 
-import type { QueryBuilderError } from "@/types/query";
+import type { QbError } from "@/types/query";
 import { toTableData } from "@/utils/query";
 
-import "./QueryBuilderResults.scss";
+import "./QbResults.scss";
 
-export const QueryBuilderResults: React.FC<QueryBuilderResultsProps> = ({
+export const QbResults: React.FC<QbResultsProps> = ({
   results,
   error,
   loading,
@@ -66,9 +66,9 @@ export const QueryBuilderResults: React.FC<QueryBuilderResultsProps> = ({
   );
 };
 
-interface QueryBuilderResultsProps {
+interface QbResultsProps {
   results: unknown[];
-  error: QueryBuilderError | null;
+  error: QbError | null;
   loading: boolean;
   meta: {
     total: number;
