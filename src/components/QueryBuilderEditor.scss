@@ -26,4 +26,17 @@
 .qb-path-item {
   background: rgba(255, 255, 255, 0.75);
   @include qb-box;
+  position: relative;
+}
+
+.qb-path-item-controls {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+
+  .qb-path-item-remove {
+    border-radius: 1rem;
+    line-height: 1;
+    padding: 0.25rem;
+  }
 }

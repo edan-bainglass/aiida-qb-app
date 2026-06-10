@@ -7,9 +7,11 @@ import { ENTITY_TYPES } from "@/types/entities";
 import type { QueryBuilderPathItem } from "@/types/query";
 
 import "./QueryBuilderEditor.scss";
+import { IoMdClose } from "react-icons/io";
 
 export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
   pathItems,
+  setPathItems,
   limit,
   setLimit,
   offset,
@@ -21,9 +23,27 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
   full,
   setFull,
   loading,
-  updatePathItem,
   handleSubmit,
 }) => {
+  const addPathItem = () => {
+    setPathItems([...pathItems, { orm_base: "node", entity_type: "" }]);
+  };
+
+  const removePathItem = (index: number) => {
+    setPathItems(pathItems.filter((_, currentIndex) => currentIndex !== index));
+  };
+
+  const updatePathItem = (
+    index: number,
+    updatedItem: Partial<QueryBuilderPathItem>,
+  ) => {
+    setPathItems(
+      pathItems.map((item, currentIndex) =>
+        currentIndex === index ? { ...item, ...updatedItem } : item,
+      ),
+    );
+  };
+
   return (
     <div id="qb-editor">
       <h2>Query</h2>
@@ -32,6 +52,8 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
           <div className="qb-section">
             <QueryBuilderPathEditor
               pathItems={pathItems}
+              addPathItem={addPathItem}
+              removePathItem={removePathItem}
               updatePathItem={updatePathItem}
             />
           </div>
@@ -60,6 +82,8 @@ export const QueryBuilderEditor: React.FC<QueryBuilderEditorProps> = ({
 
 const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
   pathItems,
+  addPathItem,
+  removePathItem,
   updatePathItem,
 }) => {
   return (
@@ -69,10 +93,14 @@ const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
           <QueryBuilderPathItemEditor
             item={item}
             index={index}
+            removePathItem={removePathItem}
             updatePathItem={updatePathItem}
           />
         </div>
       ))}
+      <Button variant="outline-secondary" onClick={addPathItem}>
+        + Add Path Item
+      </Button>
     </div>
   );
 };
@@ -80,6 +108,7 @@ const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
 const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
   item,
   index,
+  removePathItem,
   updatePathItem,
 }) => {
   const [types, setTypes] = useState<string[]>([]);
@@ -128,6 +157,18 @@ const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
 
   return (
     <div className="qb-path-item">
+      {index > 0 && (
+        <div className="qb-path-item-controls">
+          <Button
+            className="qb-path-item-remove"
+            variant="danger"
+            size="sm"
+            onClick={() => removePathItem(index)}
+          >
+            <IoMdClose />
+          </Button>
+        </div>
+      )}
       <Row className="g-3">
         <Col md={hasTypes ? 3 : 9}>
           <Form.Label>Entity</Form.Label>
@@ -309,6 +350,7 @@ const QueryBuilderSubmissionControls: React.FC<
 
 interface QueryBuilderEditorProps {
   pathItems: QueryBuilderPathItem[];
+  setPathItems: (items: QueryBuilderPathItem[]) => void;
   limit: number;
   setLimit: (limit: number) => void;
   offset: number;
@@ -320,15 +362,13 @@ interface QueryBuilderEditorProps {
   full: boolean;
   setFull: (full: boolean) => void;
   loading: boolean;
-  updatePathItem: (
-    index: number,
-    updatedItem: Partial<QueryBuilderPathItem>,
-  ) => void;
   handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
 }
 
 interface QueryBuilderPathEditorProps {
   pathItems: QueryBuilderPathItem[];
+  addPathItem: () => void;
+  removePathItem: (index: number) => void;
   updatePathItem: (
     index: number,
     updatedItem: Partial<QueryBuilderPathItem>,
@@ -338,6 +378,7 @@ interface QueryBuilderPathEditorProps {
 interface QueryBuilderPathItemEditorProps {
   item: QueryBuilderPathItem;
   index: number;
+  removePathItem: (index: number) => void;
   updatePathItem: (
     index: number,
     updatedItem: Partial<QueryBuilderPathItem>,

@@ -9,11 +9,7 @@ import {
   QueryBuilderPreview,
   QueryBuilderResults,
 } from "@/components";
-import type {
-  QueryBuilderError,
-  QueryBuilderPathItem,
-  QueryBuilderRequest,
-} from "@/types/query";
+import type { QueryBuilderError, QueryBuilderRequest } from "@/types/query";
 import { createPathItem, serializeItem } from "@/utils/query";
 
 import "./App.scss";
@@ -27,6 +23,8 @@ const App = () => {
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [distinct, setDistinct] = useState(false);
+
+  // Options state
   const [flat, setFlat] = useState(true);
   const [full, setFull] = useState(false);
 
@@ -39,17 +37,6 @@ const App = () => {
     page: number;
     pageSize: number;
   } | null>(null);
-
-  const updatePathItem = (
-    index: number,
-    updatedItem: Partial<QueryBuilderPathItem>,
-  ) => {
-    setPathItems((current) =>
-      current.map((item, currentIndex) =>
-        currentIndex === index ? { ...item, ...updatedItem } : item,
-      ),
-    );
-  };
 
   const request = useMemo<QueryBuilderRequest>(() => {
     return {
@@ -101,6 +88,7 @@ const App = () => {
                 <Card.Body>
                   <QueryBuilderEditor
                     pathItems={pathItems}
+                    setPathItems={setPathItems}
                     limit={limit}
                     setLimit={setLimit}
                     offset={offset}
@@ -112,7 +100,6 @@ const App = () => {
                     full={full}
                     setFull={setFull}
                     loading={loading}
-                    updatePathItem={updatePathItem}
                     handleSubmit={handleSubmit}
                   />
                 </Card.Body>
