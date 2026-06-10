@@ -184,7 +184,7 @@ const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
         <Col md={3}>
           <Form.Label>Tag</Form.Label>
           <Form.Control
-            value={item.tag}
+            value={item.tag || ""}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               updatePathItem(index, {
                 tag: event.target.value,
@@ -198,7 +198,7 @@ const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
           <Col md={9}>
             <Form.Label>With</Form.Label>
             <Form.Select
-              value={item.joining_keyword}
+              value={item.joining_keyword || ""}
               onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
                 updatePathItem(index, {
                   joining_keyword: event.target.value,
@@ -209,7 +209,7 @@ const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
           <Col md={3}>
             <Form.Label>Edge tag</Form.Label>
             <Form.Control
-              value={item.edge_tag}
+              value={item.edge_tag || ""}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 updatePathItem(index, {
                   edge_tag: event.target.value,
