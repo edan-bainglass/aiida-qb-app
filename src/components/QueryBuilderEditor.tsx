@@ -3,7 +3,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { useEffect, useMemo, useState } from "react";
 
 import { getNodeTypes } from "@/api/querybuilder";
-import { ENTITY_TYPES } from "@/types/entities";
+import { ENTITY_TYPES, GROUP_TYPES } from "@/types/entities";
 import type { QueryBuilderPathItem } from "@/types/query";
 
 import "./QueryBuilderEditor.scss";
@@ -86,13 +86,48 @@ const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
   removePathItem,
   updatePathItem,
 }) => {
+  const [types, setTypes] = useState<string[]>([]);
+  const [loadingTypes, setLoadingTypes] = useState(false);
+  const [errorTypes, setErrorTypes] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchNodeTypes = async () => {
+      setLoadingTypes(true);
+      setErrorTypes("");
+
+      try {
+        const types = await getNodeTypes();
+        if (types.length === 0) {
+          setErrorTypes("No node types available");
+        }
+        setTypes(types);
+      } catch (error) {
+        console.error(error);
+        setErrorTypes("Failed to load node types");
+      } finally {
+        setLoadingTypes(false);
+      }
+    };
+
+    fetchNodeTypes();
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
   return (
     <div id="qb-path-editor">
       {pathItems.map((item, index) => (
         <div key={`path-item-${index}`}>
           <QueryBuilderPathItemEditor
-            item={item}
             index={index}
+            item={item}
+            types={types}
+            loadingTypes={loadingTypes}
+            errorTypes={errorTypes}
             removePathItem={removePathItem}
             updatePathItem={updatePathItem}
           />
@@ -106,54 +141,18 @@ const QueryBuilderPathEditor: React.FC<QueryBuilderPathEditorProps> = ({
 };
 
 const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
-  item,
   index,
+  item,
+  types,
+  loadingTypes,
+  errorTypes,
   removePathItem,
   updatePathItem,
 }) => {
-  const [types, setTypes] = useState<string[]>([]);
-  const [loadingTypes, setLoadingTypes] = useState(false);
-  const [errorTypes, setErrorTypes] = useState<string | null>(null);
-
   const hasTypes = useMemo(
     () => ["node", "group"].includes(item.orm_base),
     [item.orm_base],
   );
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchNodeTypes = async () => {
-      if (!hasTypes) {
-        setTypes([""]);
-        setErrorTypes(null);
-        return;
-      }
-
-      setLoadingTypes(true);
-      setErrorTypes(null);
-
-      try {
-        const types = await getNodeTypes();
-        if (types.length === 0) {
-          throw new Error("No node types found.");
-        }
-        setTypes(["", ...types]);
-      } catch (error) {
-        setErrorTypes(
-          error instanceof Error ? error.message : "Failed to load node types.",
-        );
-      } finally {
-        setLoadingTypes(false);
-      }
-    };
-
-    fetchNodeTypes();
-
-    return () => {
-      controller.abort();
-    };
-  }, [hasTypes]);
 
   return (
     <div className="qb-path-item">
@@ -190,10 +189,8 @@ const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
         </Col>
         {hasTypes && (
           <Col md={6}>
-            <Form.Label>
-              {loadingTypes ? "Loading..." : errorTypes ? errorTypes : "Type"}
-            </Form.Label>
-            {types.length > 0 && (
+            <Form.Label>Type</Form.Label>
+            {types.length > 0 ? (
               <Form.Select
                 value={item.entity_type}
                 onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
@@ -202,23 +199,29 @@ const QueryBuilderPathItemEditor: React.FC<QueryBuilderPathItemEditorProps> = ({
                   })
                 }
               >
-                {item.orm_base === "group"
-                  ? ["", "auto", "import"].map((type) => {
-                      const displayType = type
-                        ? `group.core.${type}`
-                        : "group.core";
-                      return (
-                        <option key={type} value={displayType}>
-                          {displayType}
-                        </option>
-                      );
-                    })
-                  : types.map((type) => (
+                {item.orm_base === "group" ? (
+                  GROUP_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="">any</option>
+                    {types.map((type) => (
                       <option key={type} value={type}>
                         {type}
                       </option>
                     ))}
+                  </>
+                )}
               </Form.Select>
+            ) : (
+              <Form.Control
+                className={errorTypes ? "is-invalid text-danger" : "text-muted"}
+                value={loadingTypes ? "Loading types..." : errorTypes}
+                readOnly
+              />
             )}
           </Col>
         )}
@@ -376,8 +379,11 @@ interface QueryBuilderPathEditorProps {
 }
 
 interface QueryBuilderPathItemEditorProps {
-  item: QueryBuilderPathItem;
   index: number;
+  item: QueryBuilderPathItem;
+  types: string[];
+  loadingTypes: boolean;
+  errorTypes: string;
   removePathItem: (index: number) => void;
   updatePathItem: (
     index: number,
