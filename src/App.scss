@@ -1,0 +1,99 @@
+#qb-header {
+	margin-bottom: 2rem;
+	text-align: center;
+
+	h1 {
+		display: inline-flex;
+		font-size: 5rem;
+		font-weight: 700;
+
+		a {
+			display: inline-flex;
+			margin-right: 0.5rem;
+			align-items: center;
+
+			img {
+				width: 80px;
+			}
+		}
+	}
+}
+
+.qb-kicker {
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.qb-presets,
+.qb-meta,
+.qb-actions,
+.qb-section-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.qb-grid {
+	align-items: start;
+}
+
+.qb-card {
+	border: 0;
+	border-radius: 1.25rem;
+}
+
+.qb-section {
+	padding: 1rem 0;
+
+	&:not(:last-child) {
+		border-bottom: 1px solid rgba(20, 30, 50, 0.08);
+	}
+
+	.qb-section-head {
+		h2 {
+			margin: 0 0 1rem;
+			font-size: 1rem;
+			font-weight: 700;
+			letter-spacing: 0.02em;
+			text-transform: uppercase;
+			color: #273247;
+		}
+	}
+}
+
+.qb-path-item {
+	padding: 1rem;
+	margin-bottom: 1rem;
+	background: rgba(255, 255, 255, 0.75);
+	border: 1px solid rgba(35, 50, 90, 0.08);
+	border-radius: 1rem;
+}
+
+.qb-results-card,
+.qb-preview-card {
+	margin-bottom: 1rem;
+}
+
+.qb-empty {
+	padding: 2rem 1rem;
+	color: #60708f;
+	text-align: center;
+	border: 1px dashed rgba(35, 50, 90, 0.2);
+	border-radius: 1rem;
+}
+
+.qb-table-wrap {
+	overflow: auto;
+	max-height: 34rem;
+}
+
+.qb-preview-card pre {
+	margin: 0;
+	padding: 1rem;
+	overflow: auto;
+	font-size: 0.85rem;
+	background: #0f172a;
+	color: #e2e8f0;
+	border-radius: 1rem;
+}
