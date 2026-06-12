@@ -1,10 +1,10 @@
-# AiiDA QueryBuilder app
+# AiiDA `QueryBuilder` app
 
-A guided React interface for the AiiDA QueryBuilder.
+A guided React interface for the AiiDA `QueryBuilder`.
 
 ## Overview
 
-This app talks directly to the AiiDA REST API QueryBuilder endpoint. It does not ship a separate backend.
+This app talks directly to the AiiDA REST API `QueryBuilder` endpoint. It does not ship a separate backend.
 
 For local development, API routing is controlled by three variables:
 
