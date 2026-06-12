@@ -157,3 +157,38 @@ export async function getNodeTypes(apiBaseUrl?: string): Promise<string[]> {
 
   return payload.map((item) => item.node_type);
 }
+
+export async function getEntityProjections(
+  ormBase: string,
+  entityType?: string,
+  apiBaseUrl?: string,
+): Promise<string[]> {
+  let apiUrl = `${getApiBaseUrl(apiBaseUrl)}/${ormBase}s/projections`;
+  if (ormBase === "node" && entityType !== "any") {
+    apiUrl = apiUrl.concat(`?type=${entityType}`);
+  }
+
+  const response = await fetch(apiUrl, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  const type = entityType ? entityType : ormBase;
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch projections for ${type}: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const payload = (await response.json().catch(() => null)) as string[] | null;
+
+  if (!payload || !Array.isArray(payload)) {
+    throw new Error(
+      `Invalid response format when fetching projections for ${type}`,
+    );
+  }
+
+  return Array.from(new Set(payload));
+}

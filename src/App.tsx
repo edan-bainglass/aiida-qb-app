@@ -39,8 +39,18 @@ const App = () => {
   } | null>(null);
 
   const request = useMemo<QbRequest>(() => {
+    const project = pathItems.reduce(
+      (acc, item, index) => {
+        const defaultKey = `${item.orm_base}_${index + 1}`;
+        acc[item.tag || defaultKey] = item.projections || [];
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
+
     return {
-      path: pathItems.map(serializeItem),
+      path: pathItems.map((item, index) => serializeItem(item, index)),
+      project,
       limit,
       offset,
       distinct,

@@ -9,14 +9,15 @@ export const createPathItem = (): QbPathItem => {
     joining_value: "",
     edge_tag: "",
     outerjoin: false,
+    projections: [],
   };
 };
 
-export const serializeItem = (item: QbPathItem): string | QbPathItem => {
+export const serializeItem = (item: QbPathItem, index: number): QbPathItem => {
   const pathItem: QbPathItem = {
     entity_type: item.entity_type,
     orm_base: item.orm_base,
-    tag: item.tag || undefined,
+    tag: item.tag || `${item.orm_base}_${index + 1}`,
     joining_keyword: item.joining_keyword || undefined,
     joining_value: item.joining_value || undefined,
     edge_tag: item.edge_tag || undefined,

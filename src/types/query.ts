@@ -6,6 +6,7 @@ export type QbPathItem = {
   joining_value?: string;
   edge_tag?: string;
   outerjoin?: boolean;
+  projections?: string[];
 };
 
 export type QbRequest = {

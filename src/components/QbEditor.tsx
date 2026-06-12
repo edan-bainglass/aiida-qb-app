@@ -1,9 +1,9 @@
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Accordion, Button, Col, Form, Row } from "react-bootstrap";
 
 import { useEffect, useMemo, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
-import { getNodeTypes } from "@/api/querybuilder";
+import { getEntityProjections, getNodeTypes } from "@/api/querybuilder";
 import { ENTITY_TYPES, GROUP_TYPES } from "@/types/entities";
 import type { QbPathItem } from "@/types/query";
 
@@ -131,7 +131,7 @@ const QbPathEditor: React.FC<QbPathEditorProps> = ({
         </div>
       ))}
       <Button variant="outline-secondary" onClick={addPathItem}>
-        + Add Path Item
+        + path item
       </Button>
     </div>
   );
@@ -146,10 +146,35 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
   removePathItem,
   updatePathItem,
 }) => {
+  const [projections, setProjections] = useState<string[]>([]);
+
   const hasTypes = useMemo(
     () => ["node", "group"].includes(item.orm_base),
     [item.orm_base],
   );
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchProjections = async () => {
+      try {
+        const projections = await getEntityProjections(
+          item.orm_base,
+          item.entity_type,
+        );
+        setProjections(projections);
+      } catch (error) {
+        console.error("Failed to load projections:", error);
+        setProjections([]);
+      }
+    };
+
+    fetchProjections();
+
+    return () => {
+      controller.abort();
+    };
+  }, [item.orm_base, item.entity_type]);
 
   return (
     <div className="qb-path-item">
@@ -260,6 +285,53 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
           </Col>
         </Row>
       )}
+      <QbPathItemProjectionsEditor
+        index={index}
+        item={item}
+        options={projections}
+        updatePathItem={updatePathItem}
+      />
+    </div>
+  );
+};
+
+const QbPathItemProjectionsEditor: React.FC<
+  QbPathItemProjectionsEditorProps
+> = ({ index, item, options, updatePathItem }) => {
+  const updateProjections = (event: React.ChangeEvent<HTMLInputElement>) =>
+    updatePathItem(index, {
+      projections: event.target.checked
+        ? [...(item.projections || []), event.target.value]
+        : (item.projections || []).filter((o) => o !== event.target.value),
+    });
+
+  return (
+    <div id="qb-item-projections">
+      <Form.Label>Projections</Form.Label>
+      <Accordion>
+        <Accordion.Item eventKey="0">
+          <Accordion.Header as={Form.Label} className="qb-accordion-header">
+            Select properties to include
+          </Accordion.Header>
+          <Accordion.Body>
+            {options.length > 0 ? (
+              options.map((option) => (
+                <Form.Check
+                  key={option}
+                  type="checkbox"
+                  label={option}
+                  value={option}
+                  onChange={updateProjections}
+                />
+              ))
+            ) : (
+              <Form.Text className="text-muted">
+                No projection options available
+              </Form.Text>
+            )}
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
     </div>
   );
 };
@@ -379,6 +451,12 @@ interface QbPathItemEditorProps {
   loadingTypes: boolean;
   errorTypes: string;
   removePathItem: (index: number) => void;
+  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
+}
+interface QbPathItemProjectionsEditorProps {
+  index: number;
+  item: QbPathItem;
+  options: string[];
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
