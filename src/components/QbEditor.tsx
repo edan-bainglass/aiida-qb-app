@@ -182,7 +182,7 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
         <div className="qb-path-item-controls">
           <Button
             className="qb-path-item-remove"
-            variant="danger"
+            variant="outline-danger"
             size="sm"
             onClick={() => removePathItem(index)}
           >
