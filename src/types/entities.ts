@@ -4,17 +4,17 @@ type Entity = {
   join_options: string[];
 };
 
-const AuthInfoEntity: Entity = {
-  type: "authinfo",
-  base: "authinfo",
-  join_options: ["user", "computer"],
-};
+// const AuthInfoEntity: Entity = {
+//   type: "authinfo",
+//   base: "authinfo",
+//   join_options: ["user", "computer"],
+// };
 
-const LogEntity: Entity = {
-  type: "log",
-  base: "log",
-  join_options: ["node"],
-};
+// const LogEntity: Entity = {
+//   type: "log",
+//   base: "log",
+//   join_options: ["node"],
+// };
 
 const UserEntity: Entity = {
   type: "user",
@@ -50,20 +50,20 @@ const GroupEntity: Entity = {
   join_options: ["user", "node"],
 };
 
-const CommentEntity: Entity = {
-  type: "comment",
-  base: "comment",
-  join_options: ["user", "node"],
-};
+// const CommentEntity: Entity = {
+//   type: "comment",
+//   base: "comment",
+//   join_options: ["user", "node"],
+// };
 
 export const ENTITY_TYPES: Record<string, Entity> = {
-  authinfo: AuthInfoEntity,
-  log: LogEntity,
+  // authinfo: AuthInfoEntity,
+  // log: LogEntity,
   user: UserEntity,
   computer: ComputerEntity,
   node: NodeEntity,
   group: GroupEntity,
-  comment: CommentEntity,
+  // comment: CommentEntity,
 };
 
 export const GROUP_TYPES = ["group.core", "group.auto", "group.import"];
