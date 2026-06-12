@@ -1,29 +1,14 @@
 import type { QbPathItem } from "@/types/query";
 
-export const createPathItem = (item?: string | QbPathItem): QbPathItem => {
+export const createPathItem = (): QbPathItem => {
   return {
-    entity_type:
-      typeof item === "string"
-        ? item
-        : item?.entity_type
-          ? Array.isArray(item.entity_type)
-            ? item.entity_type[0]
-            : item.entity_type
-          : "",
-    orm_base:
-      typeof item === "object" && item.orm_base ? item.orm_base : "node",
-    tag: typeof item === "object" && item.tag ? item.tag : "",
-    joining_keyword:
-      typeof item === "object" && item.joining_keyword
-        ? item.joining_keyword
-        : "",
-    joining_value:
-      typeof item === "object" && item.joining_value ? item.joining_value : "",
-    edge_tag: typeof item === "object" && item.edge_tag ? item.edge_tag : "",
-    outerjoin:
-      typeof item === "object" && typeof item.outerjoin === "boolean"
-        ? item.outerjoin
-        : false,
+    entity_type: "",
+    orm_base: "node",
+    tag: "",
+    joining_keyword: "",
+    joining_value: "",
+    edge_tag: "",
+    outerjoin: false,
   };
 };
 
