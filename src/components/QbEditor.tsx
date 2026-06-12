@@ -6,6 +6,7 @@ import { IoMdClose } from "react-icons/io";
 import { getEntityProjections, getNodeTypes } from "@/api/querybuilder";
 import { ENTITY_TYPES, GROUP_TYPES } from "@/types/entities";
 import type { QbPathItem } from "@/types/query";
+import { createPathItem } from "@/utils/query";
 
 import "./QbEditor.scss";
 
@@ -26,7 +27,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
   handleSubmit,
 }) => {
   const addPathItem = () => {
-    setPathItems([...pathItems, { orm_base: "node", entity_type: "" }]);
+    setPathItems([...pathItems, createPathItem()]);
   };
 
   const removePathItem = (index: number) => {

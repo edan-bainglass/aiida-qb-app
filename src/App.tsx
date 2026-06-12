@@ -9,8 +9,8 @@ import {
   QueryBuilderPreview,
   QueryBuilderResults,
 } from "@/components";
-import type { QbError, QbRequest } from "@/types/query";
-import { createPathItem, serializeItem } from "@/utils/query";
+import type { QbError, QbPathItem, QbRequest } from "@/types/query";
+import { createPathItem } from "@/utils/query";
 
 import "./App.scss";
 
@@ -143,3 +143,17 @@ const App = () => {
 };
 
 export default App;
+
+function serializeItem(item: QbPathItem, index: number): QbPathItem {
+  const pathItem: QbPathItem = {
+    entity_type: item.entity_type,
+    orm_base: item.orm_base,
+    tag: item.tag || `${item.orm_base}_${index + 1}`,
+    joining_keyword: item.joining_keyword || undefined,
+    joining_value: item.joining_value || undefined,
+    edge_tag: item.edge_tag || undefined,
+    outerjoin: item.outerjoin,
+  };
+
+  return pathItem;
+}

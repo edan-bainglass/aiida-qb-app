@@ -1,7 +1,6 @@
 import { Alert, Badge, Spinner, Table } from "react-bootstrap";
 
 import type { QbError } from "@/types/query";
-import { toTableData } from "@/utils/query";
 
 import "./QbResults.scss";
 
@@ -76,4 +75,19 @@ interface QbResultsProps {
     pageSize: number;
   } | null;
   onBack: () => void;
+}
+
+function toTableData(results: unknown[]): Array<Record<string, string>> {
+  return results.map((row) => {
+    if (!row || typeof row !== "object" || Array.isArray(row)) {
+      return { value: JSON.stringify(row) };
+    }
+
+    return Object.fromEntries(
+      Object.entries(row as Record<string, unknown>).map(([key, value]) => [
+        key,
+        typeof value === "string" ? value : JSON.stringify(value),
+      ]),
+    );
+  });
 }
