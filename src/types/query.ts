@@ -1,16 +1,16 @@
 export type QbPathItem = {
   entity_type: string;
   orm_base: string;
-  tag?: string;
-  joining_keyword?: string;
-  joining_value?: string;
-  edge_tag?: string;
+  tag: string;
+  joining_keyword?: string | null;
+  joining_value?: string | null;
+  edge_tag?: string | null;
   outerjoin?: boolean;
   projections?: string[];
 };
 
 export type QbRequest = {
-  path: Array<string | QbPathItem>;
+  path: Array<QbPathItem>;
   filters?: Record<string, unknown>;
   project?: Record<string, string | string[]>;
   limit?: number;

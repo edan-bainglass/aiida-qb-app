@@ -11,6 +11,7 @@ import {
 } from "@/components";
 import type { QbError, QbPathItem, QbRequest } from "@/types/query";
 import { createPathItem } from "@/utils/query";
+import { ENTITY_TYPES } from "./types/entities";
 
 import "./App.scss";
 
@@ -38,24 +39,85 @@ const App = () => {
     pageSize: number;
   } | null>(null);
 
+  const tags = useMemo(() => {
+    const tagRegistry: Record<string, string[]> = {
+      ...Object.keys(ENTITY_TYPES).reduce(
+        (acc, type) => {
+          acc[type] = [];
+          return acc;
+        },
+        {} as Record<string, string[]>,
+      ),
+      ordered: [],
+    };
+
+    let tag: string | undefined;
+    for (const item of pathItems) {
+      if (item.tag) {
+        tag = item.tag;
+      } else {
+        const fragment = getLastFragment(item.entity_type) || item.orm_base;
+        const currentCount = tagRegistry[item.orm_base].filter((tag) =>
+          tag.startsWith(fragment),
+        ).length;
+        tag = `${fragment}_${currentCount + 1}`;
+      }
+      tagRegistry[item.orm_base].push(tag);
+      tagRegistry.ordered.push(tag);
+    }
+
+    return tagRegistry;
+  }, [pathItems]);
+
   const request = useMemo<QbRequest>(() => {
+    const serializeItem = (item: QbPathItem, index: number): QbPathItem => {
+      const tag = tags.ordered[index];
+
+      let joiningKeyword, joiningValue, edgeTag;
+      if (index > 0) {
+        joiningKeyword = item.joining_keyword
+          ? `with_${item.joining_keyword}`
+          : null;
+        joiningValue =
+          joiningKeyword && item.joining_value ? item.joining_value : null;
+        edgeTag =
+          item.edge_tag ||
+          (joiningKeyword && joiningValue ? `${tag}--${joiningValue}` : null);
+      } else {
+        joiningKeyword = null;
+        joiningValue = null;
+        edgeTag = null;
+      }
+
+      return {
+        entity_type: item.entity_type,
+        orm_base: item.orm_base,
+        tag: tag,
+        joining_keyword: joiningKeyword,
+        joining_value: joiningValue,
+        edge_tag: edgeTag,
+        outerjoin: item.outerjoin,
+      };
+    };
+
+    const path = pathItems.map((item, index) => serializeItem(item, index));
+
     const project = pathItems.reduce(
       (acc, item, index) => {
-        const defaultKey = `${item.orm_base}_${index + 1}`;
-        acc[item.tag || defaultKey] = item.projections || [];
+        acc[path[index].tag] = item.projections || [];
         return acc;
       },
       {} as Record<string, string[]>,
     );
 
     return {
-      path: pathItems.map((item, index) => serializeItem(item, index)),
+      path,
       project,
       limit,
       offset,
       distinct,
     };
-  }, [distinct, limit, offset, pathItems]);
+  }, [distinct, limit, offset, pathItems, tags]);
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -99,6 +161,7 @@ const App = () => {
                   <QueryBuilderEditor
                     pathItems={pathItems}
                     setPathItems={setPathItems}
+                    tags={tags}
                     limit={limit}
                     setLimit={setLimit}
                     offset={offset}
@@ -144,16 +207,7 @@ const App = () => {
 
 export default App;
 
-function serializeItem(item: QbPathItem, index: number): QbPathItem {
-  const pathItem: QbPathItem = {
-    entity_type: item.entity_type,
-    orm_base: item.orm_base,
-    tag: item.tag || `${item.orm_base}_${index + 1}`,
-    joining_keyword: item.joining_keyword || undefined,
-    joining_value: item.joining_value || undefined,
-    edge_tag: item.edge_tag || undefined,
-    outerjoin: item.outerjoin,
-  };
-
-  return pathItem;
+function getLastFragment(str: string) {
+  const slice = str.startsWith("group") ? -1 : -2;
+  return str.split(".").slice(slice)[0];
 }

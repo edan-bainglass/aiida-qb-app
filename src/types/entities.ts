@@ -19,7 +19,12 @@ type Entity = {
 const UserEntity: Entity = {
   type: "user",
   base: "user",
-  join_options: ["authinfo", "group", "node", "comment"],
+  join_options: [
+    // "authinfo",
+    "group",
+    "node",
+    // "comment",
+  ],
 };
 
 const ComputerEntity: Entity = {
@@ -35,8 +40,8 @@ const NodeEntity: Entity = {
     "user",
     "computer",
     "group",
-    "comment",
-    "log",
+    // "comment",
+    // "log",
     "incoming",
     "outgoing",
     "descendents",

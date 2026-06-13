@@ -1,6 +1,6 @@
 import { Accordion, Button, Col, Form, Row } from "react-bootstrap";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 import { getEntityProjections, getNodeTypes } from "@/api/querybuilder";
@@ -13,6 +13,7 @@ import "./QbEditor.scss";
 export const QbEditor: React.FC<QbEditorProps> = ({
   pathItems,
   setPathItems,
+  tags,
   limit,
   setLimit,
   offset,
@@ -26,21 +27,29 @@ export const QbEditor: React.FC<QbEditorProps> = ({
   loading,
   handleSubmit,
 }) => {
-  const addPathItem = () => {
-    setPathItems([...pathItems, createPathItem()]);
-  };
+  const addPathItem = useCallback(() => {
+    setPathItems((items) => [...items, createPathItem()]);
+  }, [setPathItems]);
 
-  const removePathItem = (index: number) => {
-    setPathItems(pathItems.filter((_, currentIndex) => currentIndex !== index));
-  };
+  const removePathItem = useCallback(
+    (index: number) => {
+      setPathItems((items) =>
+        items.filter((_, currentIndex) => currentIndex !== index),
+      );
+    },
+    [setPathItems],
+  );
 
-  const updatePathItem = (index: number, updatedItem: Partial<QbPathItem>) => {
-    setPathItems(
-      pathItems.map((item, currentIndex) =>
-        currentIndex === index ? { ...item, ...updatedItem } : item,
-      ),
-    );
-  };
+  const updatePathItem = useCallback(
+    (index: number, updatedItem: Partial<QbPathItem>) => {
+      setPathItems((items) =>
+        items.map((item, currentIndex) =>
+          currentIndex === index ? { ...item, ...updatedItem } : item,
+        ),
+      );
+    },
+    [setPathItems],
+  );
 
   return (
     <div id="qb-editor">
@@ -50,6 +59,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
           <div className="qb-section">
             <QbPathEditor
               pathItems={pathItems}
+              tags={tags}
               addPathItem={addPathItem}
               removePathItem={removePathItem}
               updatePathItem={updatePathItem}
@@ -80,6 +90,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
 
 const QbPathEditor: React.FC<QbPathEditorProps> = ({
   pathItems,
+  tags,
   addPathItem,
   removePathItem,
   updatePathItem,
@@ -111,9 +122,7 @@ const QbPathEditor: React.FC<QbPathEditorProps> = ({
 
     fetchNodeTypes();
 
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, []);
 
   return (
@@ -126,6 +135,7 @@ const QbPathEditor: React.FC<QbPathEditorProps> = ({
             types={types}
             loadingTypes={loadingTypes}
             errorTypes={errorTypes}
+            tags={tags}
             removePathItem={removePathItem}
             updatePathItem={updatePathItem}
           />
@@ -144,6 +154,7 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
   types,
   loadingTypes,
   errorTypes,
+  tags,
   removePathItem,
   updatePathItem,
 }) => {
@@ -153,6 +164,46 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
     () => ["node", "group"].includes(item.orm_base),
     [item.orm_base],
   );
+
+  const whichOptions = useMemo(() => {
+    if (!item.joining_keyword) return [];
+    if (
+      ["incoming", "outgoing", "descendents", "ancestors"].includes(
+        item.joining_keyword,
+      )
+    ) {
+      return tags.node.filter((tag) => tag != tags.ordered[index]) || [];
+    }
+    return tags[item.joining_keyword] || [];
+  }, [item.joining_keyword, tags, index]);
+
+  useEffect(() => {
+    if (index === 0) return;
+
+    if (!item.joining_keyword) {
+      if (item.joining_value) {
+        updatePathItem(index, { joining_value: "" });
+      }
+      return;
+    }
+
+    if (whichOptions.length === 0) {
+      if (item.joining_value) {
+        updatePathItem(index, { joining_value: "" });
+      }
+      return;
+    }
+
+    if (!item.joining_value || !whichOptions.includes(item.joining_value)) {
+      updatePathItem(index, { joining_value: whichOptions[0] });
+    }
+  }, [
+    index,
+    item.joining_keyword,
+    item.joining_value,
+    whichOptions,
+    updatePathItem,
+  ]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -172,9 +223,7 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
 
     fetchProjections();
 
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, [item.orm_base, item.entity_type]);
 
   return (
@@ -262,7 +311,7 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
       </Row>
       {index > 0 && (
         <Row className="g-3">
-          <Col md={9}>
+          <Col md={3}>
             <Form.Label>With</Form.Label>
             <Form.Select
               value={item.joining_keyword || ""}
@@ -271,7 +320,33 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
                   joining_keyword: event.target.value,
                 })
               }
-            />
+              required
+            >
+              <option value=""></option>
+              {ENTITY_TYPES[item.orm_base].join_options.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </Form.Select>
+          </Col>
+          <Col md={6}>
+            <Form.Label>Which</Form.Label>
+            <Form.Select
+              value={item.joining_value || ""}
+              onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                updatePathItem(index, {
+                  joining_value: event.target.value,
+                })
+              }
+              required
+            >
+              {whichOptions.map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </Form.Select>
           </Col>
           <Col md={3}>
             <Form.Label>Edge tag</Form.Label>
@@ -423,7 +498,8 @@ const QbSubmissionControl: React.FC<QbSubmissionControlsProps> = ({
 
 interface QbEditorProps {
   pathItems: QbPathItem[];
-  setPathItems: (items: QbPathItem[]) => void;
+  setPathItems: React.Dispatch<React.SetStateAction<QbPathItem[]>>;
+  tags: Record<string, string[]>;
   limit: number;
   setLimit: (limit: number) => void;
   offset: number;
@@ -440,6 +516,7 @@ interface QbEditorProps {
 
 interface QbPathEditorProps {
   pathItems: QbPathItem[];
+  tags: Record<string, string[]>;
   addPathItem: () => void;
   removePathItem: (index: number) => void;
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
@@ -451,6 +528,7 @@ interface QbPathItemEditorProps {
   types: string[];
   loadingTypes: boolean;
   errorTypes: string;
+  tags: Record<string, string[]>;
   removePathItem: (index: number) => void;
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
