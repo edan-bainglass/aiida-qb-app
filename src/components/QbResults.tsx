@@ -59,7 +59,7 @@ export const QbResults: React.FC<QbResultsProps> = ({
           </Table>
         </div>
       ) : (
-        <div id="qb-empty">Run a query to see results here.</div>
+        <div id="qb-empty">No results found</div>
       )}
     </div>
   );
