@@ -57,7 +57,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
       <Form onSubmit={handleSubmit}>
         <div id="qb-input">
           <div className="qb-section">
-            <QbPathEditor
+            <PathEditor
               pathItems={pathItems}
               tags={tags}
               addPathItem={addPathItem}
@@ -66,7 +66,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
             />
           </div>
           <div className="qb-section">
-            <QbOptionsEditor
+            <OptionsEditor
               limit={limit}
               setLimit={setLimit}
               offset={offset}
@@ -81,14 +81,14 @@ export const QbEditor: React.FC<QbEditorProps> = ({
           </div>
         </div>
         <div className="qb-section">
-          <QbSubmissionControl loading={loading} />
+          <SubmissionControl loading={loading} />
         </div>
       </Form>
     </div>
   );
 };
 
-const QbPathEditor: React.FC<QbPathEditorProps> = ({
+const PathEditor: React.FC<PathEditorProps> = ({
   pathItems,
   tags,
   addPathItem,
@@ -129,7 +129,7 @@ const QbPathEditor: React.FC<QbPathEditorProps> = ({
     <div id="qb-path-editor">
       {pathItems.map((item, index) => (
         <div key={`path-item-${index}`}>
-          <QbPathItemEditor
+          <PathItemEditor
             index={index}
             item={item}
             types={types}
@@ -148,7 +148,7 @@ const QbPathEditor: React.FC<QbPathEditorProps> = ({
   );
 };
 
-const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
+const PathItemEditor: React.FC<PathItemEditorProps> = ({
   index,
   item,
   types,
@@ -361,13 +361,13 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
           </Col>
         </Row>
       )}
-      <QbPathItemFiltersEditor
+      <FiltersEditor
         index={index}
         item={item}
         options={projections}
         updatePathItem={updatePathItem}
       />
-      <QbPathItemProjectionsEditor
+      <ProjectionsEditor
         index={index}
         item={item}
         options={projections}
@@ -377,7 +377,7 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
   );
 };
 
-const QbPathItemFiltersEditor: React.FC<QbPathItemFiltersEditorProps> = ({
+const FiltersEditor: React.FC<FiltersEditorProps> = ({
   index,
   item,
   options,
@@ -418,9 +418,12 @@ const QbPathItemFiltersEditor: React.FC<QbPathItemFiltersEditorProps> = ({
   );
 };
 
-const QbPathItemProjectionsEditor: React.FC<
-  QbPathItemProjectionsEditorProps
-> = ({ index, item, options, updatePathItem }) => {
+const ProjectionsEditor: React.FC<ProjectionsEditorProps> = ({
+  index,
+  item,
+  options,
+  updatePathItem,
+}) => {
   const updateProjections = (event: React.ChangeEvent<HTMLInputElement>) =>
     updatePathItem(index, {
       projections: event.target.checked
@@ -459,7 +462,7 @@ const QbPathItemProjectionsEditor: React.FC<
   );
 };
 
-const QbOptionsEditor: React.FC<QbOptionsEditorProps> = ({
+const OptionsEditor: React.FC<OptionsEditorProps> = ({
   limit,
   setLimit,
   offset,
@@ -531,9 +534,7 @@ const QbOptionsEditor: React.FC<QbOptionsEditorProps> = ({
   );
 };
 
-const QbSubmissionControl: React.FC<QbSubmissionControlsProps> = ({
-  loading,
-}) => {
+const SubmissionControl: React.FC<SubmissionControlsProps> = ({ loading }) => {
   return (
     <div id="qb-submit">
       <Button type="submit" size="lg" variant="dark" disabled={loading}>
@@ -561,7 +562,7 @@ interface QbEditorProps {
   handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
 }
 
-interface QbPathEditorProps {
+interface PathEditorProps {
   pathItems: QbPathItem[];
   tags: Record<string, string[]>;
   addPathItem: () => void;
@@ -569,7 +570,7 @@ interface QbPathEditorProps {
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-interface QbPathItemEditorProps {
+interface PathItemEditorProps {
   index: number;
   item: QbPathItem;
   types: string[];
@@ -580,21 +581,21 @@ interface QbPathItemEditorProps {
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-interface QbPathItemFiltersEditorProps {
+interface FiltersEditorProps {
   index: number;
   item: QbPathItem;
   options: string[];
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-interface QbPathItemProjectionsEditorProps {
+interface ProjectionsEditorProps {
   index: number;
   item: QbPathItem;
   options: string[];
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-interface QbOptionsEditorProps {
+interface OptionsEditorProps {
   limit: number;
   setLimit: (limit: number) => void;
   offset: number;
@@ -607,6 +608,6 @@ interface QbOptionsEditorProps {
   setFull: (full: boolean) => void;
 }
 
-interface QbSubmissionControlsProps {
+interface SubmissionControlsProps {
   loading: boolean;
 }
