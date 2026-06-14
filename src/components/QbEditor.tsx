@@ -361,12 +361,59 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
           </Col>
         </Row>
       )}
+      <QbPathItemFiltersEditor
+        index={index}
+        item={item}
+        options={projections}
+        updatePathItem={updatePathItem}
+      />
       <QbPathItemProjectionsEditor
         index={index}
         item={item}
         options={projections}
         updatePathItem={updatePathItem}
       />
+    </div>
+  );
+};
+
+const QbPathItemFiltersEditor: React.FC<QbPathItemFiltersEditorProps> = ({
+  index,
+  item,
+  options,
+  updatePathItem,
+}) => {
+  const parseJsonSafe = (
+    jsonString: string,
+  ): Record<string, unknown> | null => {
+    try {
+      return JSON.parse(jsonString || "{}");
+    } catch {
+      return null;
+    }
+  };
+
+  return (
+    <div id="qb-item-filters">
+      <Form.Label>Filters</Form.Label>
+      <Accordion>
+        <Accordion.Item eventKey="0">
+          <Accordion.Header as={Form.Label} className="qb-accordion-header">
+            Define filtering criteria
+          </Accordion.Header>
+          <Accordion.Body>
+            <Form.Control
+              as="textarea"
+              placeholder='e.g. {"pk": 42}'
+              onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+                updatePathItem(index, {
+                  filters: parseJsonSafe(event.target.value) || undefined,
+                })
+              }
+            />
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
     </div>
   );
 };
@@ -532,6 +579,14 @@ interface QbPathItemEditorProps {
   removePathItem: (index: number) => void;
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
+
+interface QbPathItemFiltersEditorProps {
+  index: number;
+  item: QbPathItem;
+  options: string[];
+  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
+}
+
 interface QbPathItemProjectionsEditorProps {
   index: number;
   item: QbPathItem;

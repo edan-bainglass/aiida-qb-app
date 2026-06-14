@@ -102,6 +102,14 @@ const App = () => {
 
     const path = pathItems.map((item, index) => serializeItem(item, index));
 
+    const filters = pathItems.reduce(
+      (acc, item, index) => {
+        acc[path[index].tag] = item.filters || {};
+        return acc;
+      },
+      {} as Record<string, Record<string, unknown>>,
+    );
+
     const project = pathItems.reduce(
       (acc, item, index) => {
         acc[path[index].tag] = item.projections || [];
@@ -112,6 +120,7 @@ const App = () => {
 
     return {
       path,
+      filters,
       project,
       limit,
       offset,
