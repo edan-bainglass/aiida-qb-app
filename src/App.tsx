@@ -4,11 +4,7 @@ import { Card, Carousel, Col, Container, Row } from "react-bootstrap";
 
 import { submitRequest } from "@/api/querybuilder";
 import aiidaLogo from "@/assets/img/aiida-logo.svg";
-import {
-  QueryBuilderEditor,
-  QueryBuilderPreview,
-  QueryBuilderResults,
-} from "@/components";
+import { QbEditor, QbPreview, QbResults } from "@/components";
 import type { QbError, QbPathItem, QbRequest } from "@/types/query";
 import { createPathItem } from "@/utils/query";
 import { ENTITY_TYPES } from "./types/entities";
@@ -31,6 +27,7 @@ const App = () => {
 
   // Results state
   const [results, setResults] = useState<unknown[]>([]);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState<QbError | null>(null);
   const [loading, setLoading] = useState(false);
   const [meta, setMeta] = useState<{
@@ -138,6 +135,7 @@ const App = () => {
       const response = await submitRequest(request, { flat, full });
       setResults(response.results);
       setMeta(response.meta);
+      setPage(1);
     } catch (error) {
       setError(error as QbError);
       setResults([]);
@@ -167,7 +165,7 @@ const App = () => {
             <Col xl={7}>
               <Card className="qb-card">
                 <Card.Body>
-                  <QueryBuilderEditor
+                  <QbEditor
                     pathItems={pathItems}
                     setPathItems={setPathItems}
                     tags={tags}
@@ -190,7 +188,7 @@ const App = () => {
             <Col xl={5}>
               <Card className="qb-card">
                 <Card.Body>
-                  <QueryBuilderPreview request={request} />
+                  <QbPreview request={request} />
                 </Card.Body>
               </Card>
             </Col>
@@ -199,8 +197,10 @@ const App = () => {
         <Carousel.Item>
           <Card className="qb-card">
             <Card.Body>
-              <QueryBuilderResults
+              <QbResults
                 results={results}
+                page={page}
+                setPage={setPage}
                 error={error}
                 loading={loading}
                 meta={meta}
