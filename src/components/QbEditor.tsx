@@ -1,6 +1,6 @@
-import { Accordion, Button, Col, Form, Row } from "react-bootstrap";
-
 import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { IoMdClose } from "react-icons/io";
 
 import { getEntityProjections, getNodeTypes } from "@/api/querybuilder";
@@ -8,6 +8,7 @@ import { ENTITY_TYPES, GROUP_TYPES } from "@/types/entities";
 import type { QbPathItem } from "@/types/query";
 import { createPathItem } from "@/utils/query";
 
+import { FiltersEditor } from "./QbFiltersEditor";
 import QbProjectionsEditor from "./QbProjectionsEditor";
 
 import "./QbEditor.scss";
@@ -224,6 +225,8 @@ const PathItemEditor: React.FC<PathItemEditorProps> = ({
     return () => controller.abort();
   }, [item.orm_base, item.entity_type]);
 
+  console.log(item);
+
   return (
     <div className="qb-path-item">
       {index > 0 && (
@@ -362,7 +365,6 @@ const PathItemEditor: React.FC<PathItemEditorProps> = ({
       <FiltersEditor
         index={index}
         item={item}
-        options={projections}
         updatePathItem={updatePathItem}
       />
       <QbProjectionsEditor
@@ -371,47 +373,6 @@ const PathItemEditor: React.FC<PathItemEditorProps> = ({
         options={projections}
         updatePathItem={updatePathItem}
       />
-    </div>
-  );
-};
-
-const FiltersEditor: React.FC<FiltersEditorProps> = ({
-  index,
-  item,
-  options,
-  updatePathItem,
-}) => {
-  const parseJsonSafe = (
-    jsonString: string,
-  ): Record<string, unknown> | null => {
-    try {
-      return JSON.parse(jsonString || "{}");
-    } catch {
-      return null;
-    }
-  };
-
-  return (
-    <div id="qb-item-filters">
-      <Form.Label>Filters</Form.Label>
-      <Accordion>
-        <Accordion.Item eventKey="0">
-          <Accordion.Header as={Form.Label} className="qb-accordion-header">
-            Define filtering criteria
-          </Accordion.Header>
-          <Accordion.Body>
-            <Form.Control
-              as="textarea"
-              placeholder='e.g. {"pk": 42}'
-              onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                updatePathItem(index, {
-                  filters: parseJsonSafe(event.target.value) || undefined,
-                })
-              }
-            />
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
     </div>
   );
 };
@@ -518,13 +479,6 @@ interface PathItemEditorProps {
   errorTypes: string;
   tags: Record<string, string[]>;
   removePathItem: (index: number) => void;
-  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
-}
-
-interface FiltersEditorProps {
-  index: number;
-  item: QbPathItem;
-  options: string[];
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
