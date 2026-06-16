@@ -22,8 +22,6 @@ export const QbEditor: React.FC<QbEditorProps> = ({
   setOffset,
   distinct,
   setDistinct,
-  flat,
-  setFlat,
   full,
   setFull,
   loading,
@@ -75,8 +73,6 @@ export const QbEditor: React.FC<QbEditorProps> = ({
               setOffset={setOffset}
               distinct={distinct}
               setDistinct={setDistinct}
-              flat={flat}
-              setFlat={setFlat}
               full={full}
               setFull={setFull}
             />
@@ -216,7 +212,7 @@ const PathItemEditor: React.FC<PathItemEditorProps> = ({
           item.orm_base,
           item.entity_type,
         );
-        setProjections(projections);
+        setProjections(["**", ...projections]);
       } catch (error) {
         console.error("Failed to load projections:", error);
         setProjections([]);
@@ -427,8 +423,6 @@ const OptionsEditor: React.FC<OptionsEditorProps> = ({
   setOffset,
   distinct,
   setDistinct,
-  flat,
-  setFlat,
   full,
   setFull,
 }) => {
@@ -470,16 +464,6 @@ const OptionsEditor: React.FC<OptionsEditorProps> = ({
         <Col md="auto" className="d-flex align-items-end">
           <Form.Check
             type="switch"
-            label="Flat results"
-            checked={flat}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setFlat(event.target.checked)
-            }
-          />
-        </Col>
-        <Col md="auto" className="d-flex align-items-end">
-          <Form.Check
-            type="switch"
             label="Full serialization"
             checked={full}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -512,8 +496,6 @@ interface QbEditorProps {
   setOffset: (offset: number) => void;
   distinct: boolean;
   setDistinct: (distinct: boolean) => void;
-  flat: boolean;
-  setFlat: (flat: boolean) => void;
   full: boolean;
   setFull: (full: boolean) => void;
   loading: boolean;
@@ -553,8 +535,6 @@ interface OptionsEditorProps {
   setOffset: (offset: number) => void;
   distinct: boolean;
   setDistinct: (distinct: boolean) => void;
-  flat: boolean;
-  setFlat: (flat: boolean) => void;
   full: boolean;
   setFull: (full: boolean) => void;
 }

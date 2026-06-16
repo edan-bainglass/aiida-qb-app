@@ -20,15 +20,19 @@ export type QbRequest = {
   distinct?: boolean;
 };
 
+export type QbResult = Record<string, Record<string, unknown>>;
+
+export type QbResponseMeta = {
+  total: number;
+  page: number;
+  page_size: number;
+};
+
 export type QbResponse = {
-  meta?: {
-    total?: number;
-    page?: number;
-    page_size?: number;
-  };
+  meta?: QbResponseMeta;
   data?: {
     attributes?: {
-      results?: unknown[];
+      results?: QbResult[];
     };
   };
 };
@@ -44,3 +48,7 @@ export type QbError = {
   message: string;
   details?: unknown;
 };
+
+export type PaginationItem =
+  | { type: "page"; page: number; active?: boolean }
+  | { type: "ellipsis"; key: string };

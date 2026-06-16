@@ -78,10 +78,7 @@ function readErrorMessage(payload: unknown, fallback: string): string {
 export async function submitRequest(
   request: QbRequest,
   options: QbOptions = {},
-): Promise<{
-  results: unknown[];
-  meta: { total: number; page: number; pageSize: number };
-}> {
+): Promise<QbResponse> {
   const apiBaseUrl = getApiBaseUrl(options.apiBaseUrl);
   const params = new URLSearchParams();
 
@@ -120,17 +117,7 @@ export async function submitRequest(
     } satisfies QbError;
   }
 
-  const meta = payload?.meta ?? {};
-  const results = payload?.data?.attributes?.results ?? [];
-
-  return {
-    results,
-    meta: {
-      total: meta.total ?? results.length,
-      page: meta.page ?? 1,
-      pageSize: meta.page_size ?? request.limit ?? results.length,
-    },
-  };
+  return payload ?? {};
 }
 
 export async function getNodeTypes(apiBaseUrl?: string): Promise<string[]> {

@@ -2,22 +2,29 @@ import { useMemo } from "react";
 
 import { Alert, Badge, Pagination, Spinner, Table } from "react-bootstrap";
 
-import type { QbError } from "@/types/query";
+import type {
+  PaginationItem,
+  QbError,
+  QbResponseMeta,
+  QbResult,
+} from "@/types/query";
 
 import "./QbResults.scss";
 
 interface QbResultsProps {
-  results: unknown[];
+  results: QbResult[];
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   error: QbError | null;
   loading: boolean;
-  meta: {
-    total: number;
-    page: number;
-    pageSize: number;
-  } | null;
+  meta: QbResponseMeta | null;
   onBack: () => void;
+}
+
+interface TagTable {
+  tag: string;
+  columns: string[];
+  rows: Record<string, string>[];
 }
 
 const TABLE_PAGE_SIZE = 10;
@@ -31,26 +38,22 @@ export const QbResults: React.FC<QbResultsProps> = ({
   meta,
   onBack,
 }) => {
-  const tableData = useMemo(() => toTableData(results), [results]);
+  const totalHits = results.length;
+  const totalPages = Math.ceil(totalHits / TABLE_PAGE_SIZE);
 
-  const columns = useMemo(() => Object.keys(tableData[0] ?? {}), [tableData]);
-
-  const totalTableRows = tableData.length;
-  const totalTablePages = Math.ceil(totalTableRows / TABLE_PAGE_SIZE);
-
-  const visibleRows = useMemo(() => {
+  const visibleHits = useMemo(() => {
     const start = (page - 1) * TABLE_PAGE_SIZE;
-    return tableData.slice(start, start + TABLE_PAGE_SIZE);
-  }, [tableData, page]);
+    return results.slice(start, start + TABLE_PAGE_SIZE);
+  }, [results, page]);
 
-  const showingFrom =
-    totalTableRows === 0 ? 0 : (page - 1) * TABLE_PAGE_SIZE + 1;
+  const tagTables = useMemo(() => toTagTables(visibleHits), [visibleHits]);
 
-  const showingTo = Math.min(page * TABLE_PAGE_SIZE, totalTableRows);
+  const showingFrom = totalHits === 0 ? 0 : (page - 1) * TABLE_PAGE_SIZE + 1;
+  const showingTo = Math.min(page * TABLE_PAGE_SIZE, totalHits);
 
   return (
     <div id="qb-results">
-      <div id="qb-results-header">
+      <div className="qb-results-header">
         <button className="btn btn-secondary btn-sm" onClick={onBack}>
           Back
         </button>
@@ -61,13 +64,13 @@ export const QbResults: React.FC<QbResultsProps> = ({
           {meta ? (
             <>
               <Badge bg="secondary">Matches {meta.total}</Badge>
-              <Badge bg="secondary">Returned {meta.pageSize}</Badge>
+              <Badge bg="secondary">Returned {results.length}</Badge>
             </>
           ) : null}
 
-          {totalTableRows > 0 ? (
+          {totalHits > 0 ? (
             <Badge bg="secondary">
-              Showing {showingFrom}-{showingTo}
+              Showing hits {showingFrom}-{showingTo}
             </Badge>
           ) : null}
         </div>
@@ -84,33 +87,44 @@ export const QbResults: React.FC<QbResultsProps> = ({
           <h2 className="h6">QueryBuilder request failed</h2>
           <p className="mb-0">{error.message}</p>
         </Alert>
-      ) : tableData.length > 0 ? (
+      ) : tagTables.length > 0 ? (
         <>
-          <div id="qb-table-wrap">
-            <Table striped bordered hover responsive size="sm">
-              <thead>
-                <tr>
-                  {columns.map((column) => (
-                    <th key={column}>{formatColumnHeader(column)}</th>
-                  ))}
-                </tr>
-              </thead>
+          <div id="qb-tag-tables">
+            {tagTables.map((tagTable) => (
+              <section className="qb-tag-table" key={tagTable.tag}>
+                <div className="qb-tag-table-header">
+                  <h3>{tagTable.tag}</h3>
+                  <Badge bg="secondary">{tagTable.rows.length} rows</Badge>
+                </div>
 
-              <tbody>
-                {visibleRows.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {columns.map((column) => (
-                      <td key={column}>{row[column]}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+                <div className="qb-table-wrap">
+                  <Table striped bordered hover responsive size="sm">
+                    <thead>
+                      <tr>
+                        {tagTable.columns.map((column) => (
+                          <th key={column}>{formatColumnHeader(column)}</th>
+                        ))}
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {tagTable.rows.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          {tagTable.columns.map((column) => (
+                            <td key={column}>{row[column]}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+              </section>
+            ))}
           </div>
 
           <ResultsPagination
             page={page}
-            totalPages={totalTablePages}
+            totalPages={totalPages}
             onPageChange={setPage}
           />
         </>
@@ -126,6 +140,10 @@ const ResultsPagination: React.FC<{
   totalPages: number;
   onPageChange: (page: number) => void;
 }> = ({ page, totalPages, onPageChange }) => {
+  if (totalPages <= 1) {
+    return null;
+  }
+
   const paginationItems = getPaginationItems(page, totalPages);
 
   return (
@@ -166,19 +184,51 @@ const ResultsPagination: React.FC<{
   );
 };
 
-function toTableData(results: unknown[]): Array<Record<string, string>> {
-  return results.map((row) => {
-    if (!row || typeof row !== "object" || Array.isArray(row)) {
-      return { value: formatCellValue(row) };
+function toTagTables(hits: QbResult[]): TagTable[] {
+  const tables = new Map<
+    string,
+    {
+      columns: string[];
+      rows: Record<string, string>[];
+      seenRows: Set<string>;
     }
+  >();
 
-    return Object.fromEntries(
-      Object.entries(row as Record<string, unknown>).map(([key, value]) => [
-        key,
-        formatCellValue(value),
-      ]),
-    );
-  });
+  for (const hit of hits) {
+    for (const [tag, projections] of Object.entries(hit)) {
+      if (!tables.has(tag)) {
+        tables.set(tag, {
+          columns: [],
+          rows: [],
+          seenRows: new Set(),
+        });
+      }
+
+      const table = tables.get(tag)!;
+      const row: Record<string, string> = {};
+
+      for (const [projectionKey, value] of Object.entries(projections)) {
+        if (!table.columns.includes(projectionKey)) {
+          table.columns.push(projectionKey);
+        }
+
+        row[projectionKey] = formatCellValue(value);
+      }
+
+      const rowKey = stableStringify(row);
+
+      if (!table.seenRows.has(rowKey)) {
+        table.seenRows.add(rowKey);
+        table.rows.push(row);
+      }
+    }
+  }
+
+  return Array.from(tables.entries()).map(([tag, table]) => ({
+    tag,
+    columns: table.columns,
+    rows: table.rows,
+  }));
 }
 
 function formatCellValue(value: unknown): string {
@@ -201,9 +251,16 @@ function formatColumnHeader(column: string): string {
   return column.replace(/_/g, " ");
 }
 
-type PaginationItem =
-  | { type: "page"; page: number; active?: boolean }
-  | { type: "ellipsis"; key: string };
+function stableStringify(value: Record<string, string>): string {
+  return JSON.stringify(
+    Object.keys(value)
+      .sort()
+      .reduce<Record<string, string>>((acc, key) => {
+        acc[key] = value[key];
+        return acc;
+      }, {}),
+  );
+}
 
 function getPaginationItems(
   currentPage: number,

@@ -5,7 +5,13 @@ import { Card, Carousel, Col, Container, Row } from "react-bootstrap";
 import { submitRequest } from "@/api/querybuilder";
 import aiidaLogo from "@/assets/img/aiida-logo.svg";
 import { QbEditor, QbPreview, QbResults } from "@/components";
-import type { QbError, QbPathItem, QbRequest } from "@/types/query";
+import type {
+  QbError,
+  QbPathItem,
+  QbRequest,
+  QbResponseMeta,
+  QbResult,
+} from "@/types/query";
 import { createPathItem } from "@/utils/query";
 import { ENTITY_TYPES } from "./types/entities";
 
@@ -17,24 +23,19 @@ const App = () => {
 
   // Query state
   const [pathItems, setPathItems] = useState([createPathItem()]);
+
+  // Options state
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [distinct, setDistinct] = useState(false);
-
-  // Options state
-  const [flat, setFlat] = useState(true);
   const [full, setFull] = useState(false);
 
   // Results state
-  const [results, setResults] = useState<unknown[]>([]);
+  const [results, setResults] = useState<QbResult[]>([]);
   const [page, setPage] = useState(1);
   const [error, setError] = useState<QbError | null>(null);
   const [loading, setLoading] = useState(false);
-  const [meta, setMeta] = useState<{
-    total: number;
-    page: number;
-    pageSize: number;
-  } | null>(null);
+  const [meta, setMeta] = useState<QbResponseMeta | null>(null);
 
   const tags = useMemo(() => {
     const tagRegistry: Record<string, string[]> = {
@@ -132,9 +133,9 @@ const App = () => {
     setIndex(1);
 
     try {
-      const response = await submitRequest(request, { flat, full });
-      setResults(response.results);
-      setMeta(response.meta);
+      const response = await submitRequest(request, { full });
+      setResults(response.data?.attributes?.results || []);
+      setMeta(response.meta || null);
       setPage(1);
     } catch (error) {
       setError(error as QbError);
@@ -175,8 +176,6 @@ const App = () => {
                     setOffset={setOffset}
                     distinct={distinct}
                     setDistinct={setDistinct}
-                    flat={flat}
-                    setFlat={setFlat}
                     full={full}
                     setFull={setFull}
                     loading={loading}
