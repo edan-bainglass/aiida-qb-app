@@ -9,7 +9,7 @@ import type { QbPathItem } from "@/types/query";
 import { createPathItem } from "@/utils/query";
 
 import { FiltersEditor } from "./QbFiltersEditor";
-import QbProjectionsEditor from "./QbProjectionsEditor";
+import { QbProjectionsEditor } from "./QbProjectionsEditor";
 
 import "./QbEditor.scss";
 

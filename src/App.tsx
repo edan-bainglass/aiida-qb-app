@@ -167,7 +167,7 @@ const App = () => {
       <Carousel indicators={false} controls={false} activeIndex={index}>
         <Carousel.Item>
           <Row>
-            <Col xl={7}>
+            <Col xl={8}>
               <Card className="qb-card">
                 <Card.Body>
                   <QbEditor
@@ -186,7 +186,7 @@ const App = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col xl={5}>
+            <Col xl={4}>
               <Card className="qb-card">
                 <Card.Body>
                   <QbPreview request={request} />

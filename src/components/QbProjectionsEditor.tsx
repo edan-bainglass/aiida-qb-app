@@ -32,7 +32,7 @@ interface QbProjectionsEditorProps {
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
+export const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
   index,
   item,
   options,
@@ -118,7 +118,7 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
 
           <Accordion.Body>
             <Row className="g-3 qb-projections-picker">
-              <Col lg={6} xl={12}>
+              <Col lg={6}>
                 <div className="qb-projections-box">
                   <div className="qb-projections-box-header">
                     <strong>Choices</strong>
@@ -156,7 +156,7 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
                   <div className="qb-custom-projection-input">
                     <Form.Control
                       size="sm"
-                      placeholder="Custom projection, e.g. attributes.foo"
+                      placeholder="Custom, e.g. attributes.foo"
                       value={customProjection}
                       onChange={(event) =>
                         setCustomProjection(event.target.value)
@@ -176,7 +176,7 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
                 </div>
               </Col>
 
-              <Col lg={6} xl={12}>
+              <Col lg={6}>
                 <div className="qb-projections-box">
                   <div className="qb-projections-box-header">
                     <strong>Selected</strong>
@@ -226,8 +226,6 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
     </div>
   );
 };
-
-export default QbProjectionsEditor;
 
 interface SortableSelectedProjectionProps {
   projection: string;
