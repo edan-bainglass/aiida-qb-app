@@ -217,10 +217,8 @@ function toTagTables(hits: QbResult[]): TagTable[] {
 
       const rowKey = stableStringify(row);
 
-      if (!table.seenRows.has(rowKey)) {
-        table.seenRows.add(rowKey);
-        table.rows.push(row);
-      }
+      table.seenRows.add(rowKey);
+      table.rows.push(row);
     }
   }
 

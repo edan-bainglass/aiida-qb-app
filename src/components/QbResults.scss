@@ -24,3 +24,9 @@
   border: 1px dashed rgba(35, 50, 90, 0.2);
   border-radius: 1rem;
 }
+
+#qb-tag-tables {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
