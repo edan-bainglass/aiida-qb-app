@@ -213,7 +213,7 @@ const PathItemEditor: React.FC<PathItemEditorProps> = ({
           item.orm_base,
           item.entity_type,
         );
-        setProjections(["**", ...projections]);
+        setProjections(projections);
       } catch (error) {
         console.error("Failed to load projections:", error);
         setProjections([]);

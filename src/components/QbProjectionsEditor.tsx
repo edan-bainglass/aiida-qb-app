@@ -63,10 +63,8 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
 
   const addProjection = (projection: string) => {
     const cleanProjection = projection.trim();
-
     if (!cleanProjection) return;
     if (selectedProjections.includes(cleanProjection)) return;
-
     setSelectedProjections([...selectedProjections, cleanProjection]);
   };
 
@@ -74,6 +72,16 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
     setSelectedProjections(
       selectedProjections.filter((selected) => selected !== projection),
     );
+  };
+
+  const addAllProjections = () => {
+    if (availableOptions.length === 0) return;
+    setSelectedProjections([...selectedProjections, ...availableOptions]);
+  };
+
+  const removeAllProjections = () => {
+    if (selectedProjections.length === 0) return;
+    setSelectedProjections([]);
   };
 
   const addCustomProjection = () => {
@@ -85,21 +93,16 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key !== "Enter") return;
-
     event.preventDefault();
     addCustomProjection();
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (!over || active.id === over.id) return;
-
     const oldIndex = selectedProjections.indexOf(String(active.id));
     const newIndex = selectedProjections.indexOf(String(over.id));
-
     if (oldIndex === -1 || newIndex === -1) return;
-
     setSelectedProjections(arrayMove(selectedProjections, oldIndex, newIndex));
   };
 
@@ -119,7 +122,15 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
                 <div className="qb-projections-box">
                   <div className="qb-projections-box-header">
                     <strong>Choices</strong>
-                    <Form.Text className="text-muted">Click to add</Form.Text>
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      type="button"
+                      onClick={addAllProjections}
+                      disabled={availableOptions.length === 0}
+                    >
+                      Add all
+                    </Button>
                   </div>
 
                   <div className="qb-projection-choices-list">
@@ -169,9 +180,15 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
                 <div className="qb-projections-box">
                   <div className="qb-projections-box-header">
                     <strong>Selected</strong>
-                    <Form.Text className="text-muted">
-                      Drag to reorder
-                    </Form.Text>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      type="button"
+                      onClick={removeAllProjections}
+                      disabled={selectedProjections.length === 0}
+                    >
+                      Remove all
+                    </Button>
                   </div>
 
                   {selectedProjections.length > 0 ? (
@@ -189,7 +206,6 @@ const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
                             <SortableSelectedProjection
                               key={projection}
                               projection={projection}
-                              isCustom={!options.includes(projection)}
                               onRemove={removeProjection}
                             />
                           ))}
@@ -215,13 +231,11 @@ export default QbProjectionsEditor;
 
 interface SortableSelectedProjectionProps {
   projection: string;
-  isCustom: boolean;
   onRemove: (projection: string) => void;
 }
 
 const SortableSelectedProjection: React.FC<SortableSelectedProjectionProps> = ({
   projection,
-  isCustom,
   onRemove,
 }) => {
   const {
@@ -251,10 +265,7 @@ const SortableSelectedProjection: React.FC<SortableSelectedProjectionProps> = ({
         ⠿
       </button>
 
-      <span className="qb-selected-projection-label">
-        {projection}
-        {isCustom && <span className="qb-custom-projection-badge">custom</span>}
-      </span>
+      <span className="qb-selected-projection-label">{projection}</span>
 
       <Button
         type="button"
