@@ -1,4 +1,4 @@
-import type { QbRequest, QbOptions, QbResponse, QbError } from "@/types/query";
+import type { QbError, QbRequest, QbResponse } from "@/types/query";
 
 export function normalizePathPrefix(
   value: string | undefined,
@@ -75,20 +75,9 @@ function readErrorMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
-export async function submitRequest(
-  request: QbRequest,
-  options: QbOptions = {},
-): Promise<QbResponse> {
-  const apiBaseUrl = getApiBaseUrl(options.apiBaseUrl);
+export async function submitRequest(request: QbRequest): Promise<QbResponse> {
+  const apiBaseUrl = getApiBaseUrl();
   const params = new URLSearchParams();
-
-  if (options.flat ?? true) {
-    params.set("flat", "true");
-  }
-
-  if (options.full) {
-    params.set("full", "true");
-  }
 
   const response = await fetch(
     `${apiBaseUrl}/querybuilder?${params.toString()}`,
@@ -99,7 +88,6 @@ export async function submitRequest(
         Accept: "application/vnd.api+json, application/json",
       },
       body: JSON.stringify(request),
-      signal: options.signal,
     },
   );
 

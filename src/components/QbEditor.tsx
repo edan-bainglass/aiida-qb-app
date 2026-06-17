@@ -23,8 +23,6 @@ export const QbEditor: React.FC<QbEditorProps> = ({
   setOffset,
   distinct,
   setDistinct,
-  full,
-  setFull,
   loading,
   handleSubmit,
 }) => {
@@ -74,8 +72,6 @@ export const QbEditor: React.FC<QbEditorProps> = ({
               setOffset={setOffset}
               distinct={distinct}
               setDistinct={setDistinct}
-              full={full}
-              setFull={setFull}
             />
           </div>
         </div>
@@ -384,8 +380,6 @@ const OptionsEditor: React.FC<OptionsEditorProps> = ({
   setOffset,
   distinct,
   setDistinct,
-  full,
-  setFull,
 }) => {
   return (
     <div id="qb-query-options">
@@ -422,16 +416,6 @@ const OptionsEditor: React.FC<OptionsEditorProps> = ({
             }
           />
         </Col>
-        <Col md="auto" className="d-flex align-items-end">
-          <Form.Check
-            type="switch"
-            label="Full serialization"
-            checked={full}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setFull(event.target.checked)
-            }
-          />
-        </Col>
       </Row>
     </div>
   );
@@ -457,8 +441,6 @@ interface QbEditorProps {
   setOffset: (offset: number) => void;
   distinct: boolean;
   setDistinct: (distinct: boolean) => void;
-  full: boolean;
-  setFull: (full: boolean) => void;
   loading: boolean;
   handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
 }
@@ -489,8 +471,6 @@ interface OptionsEditorProps {
   setOffset: (offset: number) => void;
   distinct: boolean;
   setDistinct: (distinct: boolean) => void;
-  full: boolean;
-  setFull: (full: boolean) => void;
 }
 
 interface SubmissionControlsProps {

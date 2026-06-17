@@ -37,13 +37,6 @@ export type QbResponse = {
   };
 };
 
-export type QbOptions = {
-  flat?: boolean;
-  full?: boolean;
-  apiBaseUrl?: string;
-  signal?: AbortSignal;
-};
-
 export type QbError = {
   message: string;
   details?: unknown;

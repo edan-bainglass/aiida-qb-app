@@ -28,7 +28,6 @@ const App = () => {
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [distinct, setDistinct] = useState(false);
-  const [full, setFull] = useState(false);
 
   // Results state
   const [results, setResults] = useState<QbResult[]>([]);
@@ -138,7 +137,7 @@ const App = () => {
     setIndex(1);
 
     try {
-      const response = await submitRequest(request, { full });
+      const response = await submitRequest(request);
       setResults(response.data?.attributes?.results || []);
       setMeta(response.meta || null);
       setPage(1);
@@ -181,8 +180,6 @@ const App = () => {
                     setOffset={setOffset}
                     distinct={distinct}
                     setDistinct={setDistinct}
-                    full={full}
-                    setFull={setFull}
                     loading={loading}
                     handleSubmit={handleSubmit}
                   />
