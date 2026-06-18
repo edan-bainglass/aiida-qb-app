@@ -8,10 +8,24 @@ import { ENTITY_TYPES, GROUP_TYPES } from "@/types/entities";
 import type { QbPathItem } from "@/types/query";
 import { createPathItem } from "@/utils/query";
 
-import { FiltersEditor } from "./QbFiltersEditor";
+import { QbFiltersEditor } from "./QbFiltersEditor";
 import { QbProjectionsEditor } from "./QbProjectionsEditor";
 
 import "./QbEditor.scss";
+
+interface QbEditorProps {
+  pathItems: QbPathItem[];
+  setPathItems: React.Dispatch<React.SetStateAction<QbPathItem[]>>;
+  tags: Record<string, string[]>;
+  limit: number;
+  setLimit: (limit: number) => void;
+  offset: number;
+  setOffset: (offset: number) => void;
+  distinct: boolean;
+  setDistinct: (distinct: boolean) => void;
+  loading: boolean;
+  handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
+}
 
 export const QbEditor: React.FC<QbEditorProps> = ({
   pathItems,
@@ -54,36 +68,40 @@ export const QbEditor: React.FC<QbEditorProps> = ({
     <div id="qb-editor">
       <h2>Query</h2>
       <Form onSubmit={handleSubmit}>
-        <div id="qb-input">
-          <div className="qb-section">
-            <PathEditor
-              pathItems={pathItems}
-              tags={tags}
-              addPathItem={addPathItem}
-              removePathItem={removePathItem}
-              updatePathItem={updatePathItem}
-            />
-          </div>
-          <div className="qb-section">
-            <OptionsEditor
-              limit={limit}
-              setLimit={setLimit}
-              offset={offset}
-              setOffset={setOffset}
-              distinct={distinct}
-              setDistinct={setDistinct}
-            />
-          </div>
+        <div className="qb-section">
+          <QbPathEditor
+            pathItems={pathItems}
+            tags={tags}
+            addPathItem={addPathItem}
+            removePathItem={removePathItem}
+            updatePathItem={updatePathItem}
+          />
         </div>
         <div className="qb-section">
-          <SubmissionControl loading={loading} />
+          <QbControls
+            limit={limit}
+            setLimit={setLimit}
+            offset={offset}
+            setOffset={setOffset}
+            distinct={distinct}
+            setDistinct={setDistinct}
+            loading={loading}
+          />
         </div>
       </Form>
     </div>
   );
 };
 
-const PathEditor: React.FC<PathEditorProps> = ({
+interface QbPathEditorProps {
+  pathItems: QbPathItem[];
+  tags: Record<string, string[]>;
+  addPathItem: () => void;
+  removePathItem: (index: number) => void;
+  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
+}
+
+const QbPathEditor: React.FC<QbPathEditorProps> = ({
   pathItems,
   tags,
   addPathItem,
@@ -124,7 +142,7 @@ const PathEditor: React.FC<PathEditorProps> = ({
     <div id="qb-path-editor">
       {pathItems.map((item, index) => (
         <div key={`path-item-${index}`}>
-          <PathItemEditor
+          <QbPathItemEditor
             index={index}
             item={item}
             types={types}
@@ -143,7 +161,18 @@ const PathEditor: React.FC<PathEditorProps> = ({
   );
 };
 
-const PathItemEditor: React.FC<PathItemEditorProps> = ({
+interface QbPathItemEditorProps {
+  index: number;
+  item: QbPathItem;
+  types: string[];
+  loadingTypes: boolean;
+  errorTypes: string;
+  tags: Record<string, string[]>;
+  removePathItem: (index: number) => void;
+  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
+}
+
+const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
   index,
   item,
   types,
@@ -358,7 +387,7 @@ const PathItemEditor: React.FC<PathItemEditorProps> = ({
           </Col>
         </Row>
       )}
-      <FiltersEditor
+      <QbFiltersEditor
         index={index}
         item={item}
         updatePathItem={updatePathItem}
@@ -373,18 +402,29 @@ const PathItemEditor: React.FC<PathItemEditorProps> = ({
   );
 };
 
-const OptionsEditor: React.FC<OptionsEditorProps> = ({
+interface QbControlsProps {
+  limit: number;
+  setLimit: (limit: number) => void;
+  offset: number;
+  setOffset: (offset: number) => void;
+  distinct: boolean;
+  setDistinct: (distinct: boolean) => void;
+  loading: boolean;
+}
+
+const QbControls: React.FC<QbControlsProps> = ({
   limit,
   setLimit,
   offset,
   setOffset,
   distinct,
   setDistinct,
+  loading,
 }) => {
   return (
-    <div id="qb-query-options">
-      <Row className="g-3">
-        <Col md={2}>
+    <div id="qb-query-controls">
+      <Row className="g-3 align-items-center">
+        <Col md={9} id="qb-query-options">
           <Form.Label>Limit</Form.Label>
           <Form.Control
             type="number"
@@ -394,8 +434,6 @@ const OptionsEditor: React.FC<OptionsEditorProps> = ({
               setLimit(Number(event.target.value))
             }
           />
-        </Col>
-        <Col md={2}>
           <Form.Label>Offset</Form.Label>
           <Form.Control
             type="number"
@@ -405,8 +443,6 @@ const OptionsEditor: React.FC<OptionsEditorProps> = ({
               setOffset(Number(event.target.value))
             }
           />
-        </Col>
-        <Col md={2} className="d-flex align-items-end">
           <Form.Check
             type="switch"
             label="Distinct"
@@ -416,63 +452,12 @@ const OptionsEditor: React.FC<OptionsEditorProps> = ({
             }
           />
         </Col>
+        <Col md={3} id="qb-query-submit">
+          <Button type="submit" size="lg" variant="dark" disabled={loading}>
+            {loading ? "Running..." : "Run query"}
+          </Button>
+        </Col>
       </Row>
     </div>
   );
 };
-
-const SubmissionControl: React.FC<SubmissionControlsProps> = ({ loading }) => {
-  return (
-    <div id="qb-submit">
-      <Button type="submit" size="lg" variant="dark" disabled={loading}>
-        {loading ? "Running..." : "Run query"}
-      </Button>
-    </div>
-  );
-};
-
-interface QbEditorProps {
-  pathItems: QbPathItem[];
-  setPathItems: React.Dispatch<React.SetStateAction<QbPathItem[]>>;
-  tags: Record<string, string[]>;
-  limit: number;
-  setLimit: (limit: number) => void;
-  offset: number;
-  setOffset: (offset: number) => void;
-  distinct: boolean;
-  setDistinct: (distinct: boolean) => void;
-  loading: boolean;
-  handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
-}
-
-interface PathEditorProps {
-  pathItems: QbPathItem[];
-  tags: Record<string, string[]>;
-  addPathItem: () => void;
-  removePathItem: (index: number) => void;
-  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
-}
-
-interface PathItemEditorProps {
-  index: number;
-  item: QbPathItem;
-  types: string[];
-  loadingTypes: boolean;
-  errorTypes: string;
-  tags: Record<string, string[]>;
-  removePathItem: (index: number) => void;
-  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
-}
-
-interface OptionsEditorProps {
-  limit: number;
-  setLimit: (limit: number) => void;
-  offset: number;
-  setOffset: (offset: number) => void;
-  distinct: boolean;
-  setDistinct: (distinct: boolean) => void;
-}
-
-interface SubmissionControlsProps {
-  loading: boolean;
-}

@@ -8,13 +8,13 @@ import type { QbPathItem } from "@/types/query";
 
 import "./QbFiltersEditor.scss";
 
-interface FiltersEditorProps {
+interface QbFiltersEditorProps {
   index: number;
   item: QbPathItem;
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-export const FiltersEditor: React.FC<FiltersEditorProps> = ({
+export const QbFiltersEditor: React.FC<QbFiltersEditorProps> = ({
   index,
   item,
   updatePathItem,
