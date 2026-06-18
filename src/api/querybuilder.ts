@@ -77,7 +77,7 @@ function readErrorMessage(payload: unknown, fallback: string): string {
 
 export async function submitRequest(request: QbRequest): Promise<QbResponse> {
   const apiBaseUrl = getApiBaseUrl();
-  const params = new URLSearchParams();
+  const params = new URLSearchParams({ full: "true" });
 
   const response = await fetch(
     `${apiBaseUrl}/querybuilder?${params.toString()}`,
