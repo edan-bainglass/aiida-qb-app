@@ -212,7 +212,15 @@ const App = () => {
 
 export default App;
 
-function getLastFragment(str: string) {
-  const slice = str.startsWith("group") ? -1 : -2;
-  return str.split(".").slice(slice)[0];
+function getLastFragment(value: string | string[]) {
+  const values = Array.isArray(value) ? value : [value];
+  const fragments = values
+    .filter(Boolean)
+    .map((entry) => {
+      const slice = entry.startsWith("group") ? -1 : -2;
+      return entry.split(".").slice(slice)[0];
+    })
+    .filter(Boolean);
+
+  return Array.from(new Set(fragments)).join("_");
 }

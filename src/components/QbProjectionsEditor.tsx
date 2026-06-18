@@ -30,6 +30,7 @@ interface QbProjectionsEditorProps {
   item: QbPathItem;
   options: string[];
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
+  validationError?: string;
 }
 
 export const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
@@ -37,6 +38,7 @@ export const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
   item,
   options,
   updatePathItem,
+  validationError,
 }) => {
   const [customProjection, setCustomProjection] = useState("");
 
@@ -109,7 +111,6 @@ export const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
   return (
     <div id="qb-item-projections">
       <Form.Label>Projections</Form.Label>
-
       <Accordion>
         <Accordion.Item eventKey="0">
           <Accordion.Header as={Form.Label} className="qb-accordion-header">
@@ -121,7 +122,7 @@ export const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
               <Col lg={6}>
                 <div className="qb-projections-box">
                   <div className="qb-projections-box-header">
-                    <strong>Choices</strong>
+                    <Form.Label>Choices</Form.Label>
                     <Button
                       size="sm"
                       variant="outline-secondary"
@@ -179,7 +180,7 @@ export const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
               <Col lg={6}>
                 <div className="qb-projections-box">
                   <div className="qb-projections-box-header">
-                    <strong>Selected</strong>
+                    <Form.Label>Selected</Form.Label>
                     <Button
                       size="sm"
                       variant="outline-danger"
@@ -223,6 +224,9 @@ export const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
+      {validationError && (
+        <Form.Text className="text-danger d-block">{validationError}</Form.Text>
+      )}
     </div>
   );
 };

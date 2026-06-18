@@ -1,5 +1,5 @@
 export type QbPathItem = {
-  entity_type: string;
+  entity_type: string | string[];
   orm_base: string;
   tag: string;
   joining_keyword?: string | null;

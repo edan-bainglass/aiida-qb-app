@@ -40,6 +40,27 @@ export const QbEditor: React.FC<QbEditorProps> = ({
   loading,
   handleSubmit,
 }) => {
+  const [pathErrors, setPathErrors] = useState<Record<number, string>>({});
+
+  const hasError = useMemo(
+    () => Object.values(pathErrors).some(Boolean),
+    [pathErrors],
+  );
+
+  const setPathError = useCallback((index: number, error: string) => {
+    setPathErrors((errors) => {
+      const currentError = errors[index] ?? "";
+      if (currentError === error) return errors;
+      const nextErrors = { ...errors };
+      if (error) {
+        nextErrors[index] = error;
+      } else {
+        delete nextErrors[index];
+      }
+      return nextErrors;
+    });
+  }, []);
+
   const addPathItem = useCallback(() => {
     setPathItems((items) => [...items, createPathItem()]);
   }, [setPathItems]);
@@ -49,6 +70,19 @@ export const QbEditor: React.FC<QbEditorProps> = ({
       setPathItems((items) =>
         items.filter((_, currentIndex) => currentIndex !== index),
       );
+
+      setPathErrors((errors) => {
+        const nextErrors: Record<number, string> = {};
+        for (const [key, value] of Object.entries(errors)) {
+          const currentIndex = Number(key);
+          if (currentIndex < index) {
+            nextErrors[currentIndex] = value;
+          } else if (currentIndex > index) {
+            nextErrors[currentIndex - 1] = value;
+          }
+        }
+        return nextErrors;
+      });
     },
     [setPathItems],
   );
@@ -67,7 +101,15 @@ export const QbEditor: React.FC<QbEditorProps> = ({
   return (
     <div id="qb-editor">
       <h2>Query</h2>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        onSubmit={(event) => {
+          if (hasError) {
+            event.preventDefault();
+            return;
+          }
+          handleSubmit(event);
+        }}
+      >
         <div className="qb-section">
           <QbPathEditor
             pathItems={pathItems}
@@ -75,6 +117,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
             addPathItem={addPathItem}
             removePathItem={removePathItem}
             updatePathItem={updatePathItem}
+            setPathError={setPathError}
           />
         </div>
         <div className="qb-section">
@@ -85,7 +128,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
             setOffset={setOffset}
             distinct={distinct}
             setDistinct={setDistinct}
-            loading={loading}
+            disabled={loading || hasError}
           />
         </div>
       </Form>
@@ -99,6 +142,7 @@ interface QbPathEditorProps {
   addPathItem: () => void;
   removePathItem: (index: number) => void;
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
+  setPathError: (index: number, error: string) => void;
 }
 
 const QbPathEditor: React.FC<QbPathEditorProps> = ({
@@ -107,6 +151,7 @@ const QbPathEditor: React.FC<QbPathEditorProps> = ({
   addPathItem,
   removePathItem,
   updatePathItem,
+  setPathError,
 }) => {
   const [types, setTypes] = useState<string[]>([]);
   const [loadingTypes, setLoadingTypes] = useState(false);
@@ -151,6 +196,7 @@ const QbPathEditor: React.FC<QbPathEditorProps> = ({
             tags={tags}
             removePathItem={removePathItem}
             updatePathItem={updatePathItem}
+            setPathError={setPathError}
           />
         </div>
       ))}
@@ -170,6 +216,7 @@ interface QbPathItemEditorProps {
   tags: Record<string, string[]>;
   removePathItem: (index: number) => void;
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
+  setPathError: (index: number, error: string) => void;
 }
 
 const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
@@ -181,8 +228,17 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
   tags,
   removePathItem,
   updatePathItem,
+  setPathError,
 }) => {
   const [projections, setProjections] = useState<string[]>([]);
+  const [projectionError, setProjectionError] = useState("");
+
+  const selectedEntityTypes = useMemo(() => {
+    if (Array.isArray(item.entity_type)) {
+      return item.entity_type.filter(Boolean);
+    }
+    return item.entity_type ? [item.entity_type] : [];
+  }, [item.entity_type]);
 
   const hasTypes = useMemo(
     () => ["node", "group"].includes(item.orm_base),
@@ -230,27 +286,73 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
   ]);
 
   useEffect(() => {
-    const controller = new AbortController();
+    let cancelled = false;
+
+    const setsMatchExactly = (entries: string[][]) => {
+      if (entries.length <= 1) return true;
+
+      const normalize = (entry: string[]) =>
+        Array.from(new Set(entry)).sort((a, b) => a.localeCompare(b));
+
+      const baseline = normalize(entries[0]);
+      return entries.slice(1).every((entry) => {
+        const candidate = normalize(entry);
+        if (candidate.length !== baseline.length) return false;
+        return candidate.every((value, idx) => value === baseline[idx]);
+      });
+    };
 
     const fetchProjections = async () => {
       try {
+        if (selectedEntityTypes.length > 1) {
+          const projectionsByType = await Promise.all(
+            selectedEntityTypes.map((type) =>
+              getEntityProjections(item.orm_base, type),
+            ),
+          );
+
+          if (cancelled) return;
+
+          const mergedProjections = Array.from(
+            new Set(projectionsByType.flat()),
+          );
+          const hasProjectionMismatch = !setsMatchExactly(projectionsByType);
+          const validationError = hasProjectionMismatch
+            ? "Selected types expose different projection sets. Select a compatible type combination."
+            : "";
+
+          setProjections(mergedProjections);
+          setProjectionError(validationError);
+          setPathError(index, validationError);
+          return;
+        }
+
         const projections = await getEntityProjections(
           item.orm_base,
-          item.entity_type,
+          selectedEntityTypes[0],
         );
+
+        if (cancelled) return;
+
         setProjections(projections);
+        setProjectionError("");
+        setPathError(index, "");
       } catch (error) {
         console.error("Failed to load projections:", error);
+        if (cancelled) return;
+
         setProjections([]);
+        setProjectionError("");
+        setPathError(index, "");
       }
     };
 
     fetchProjections();
 
-    return () => controller.abort();
-  }, [item.orm_base, item.entity_type]);
-
-  console.log(item);
+    return () => {
+      cancelled = true;
+    };
+  }, [index, item.orm_base, selectedEntityTypes, setPathError]);
 
   return (
     <div className="qb-path-item">
@@ -267,7 +369,7 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
         </div>
       )}
       <Row className="g-3">
-        <Col md={hasTypes ? 3 : 9}>
+        <Col md={9}>
           <Form.Label>Entity</Form.Label>
           <Form.Select
             value={item.orm_base}
@@ -285,44 +387,6 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
             ))}
           </Form.Select>
         </Col>
-        {hasTypes && (
-          <Col md={6}>
-            <Form.Label>Type</Form.Label>
-            {types.length > 0 ? (
-              <Form.Select
-                value={item.entity_type}
-                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                  updatePathItem(index, {
-                    entity_type: event.target.value,
-                  })
-                }
-              >
-                {item.orm_base === "group" ? (
-                  GROUP_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))
-                ) : (
-                  <>
-                    <option value="">any</option>
-                    {types.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </>
-                )}
-              </Form.Select>
-            ) : (
-              <Form.Control
-                className={errorTypes ? "is-invalid text-danger" : "text-muted"}
-                value={loadingTypes ? "Loading types..." : errorTypes}
-                readOnly
-              />
-            )}
-          </Col>
-        )}
         <Col md={3}>
           <Form.Label>Tag</Form.Label>
           <Form.Control
@@ -335,6 +399,16 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
           />
         </Col>
       </Row>
+      {hasTypes && (
+        <QbPathItemTypeEditor
+          types={types}
+          item={item}
+          updatePathItem={updatePathItem}
+          index={index}
+          errorTypes={errorTypes}
+          loadingTypes={loadingTypes}
+        />
+      )}
       {index > 0 && (
         <Row className="g-3">
           <Col md={3}>
@@ -397,7 +471,140 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
         item={item}
         options={projections}
         updatePathItem={updatePathItem}
+        validationError={projectionError}
       />
+    </div>
+  );
+};
+
+interface QbPathItemTypeEditorProps {
+  types: string[];
+  item: QbPathItem;
+  updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
+  index: number;
+  errorTypes: string;
+  loadingTypes: boolean;
+}
+
+const QbPathItemTypeEditor: React.FC<QbPathItemTypeEditorProps> = ({
+  types,
+  item,
+  updatePathItem,
+  index,
+  errorTypes,
+  loadingTypes,
+}) => {
+  const [selectedType, setSelectedType] = useState("");
+
+  const typeOptions = useMemo(
+    () => (item.orm_base === "group" ? GROUP_TYPES : types),
+    [item.orm_base, types],
+  );
+
+  const selectedTypes = useMemo(
+    () =>
+      Array.isArray(item.entity_type)
+        ? item.entity_type
+        : item.entity_type
+          ? [item.entity_type]
+          : [],
+    [item.entity_type],
+  );
+
+  const availableTypeOptions = useMemo(
+    () => typeOptions.filter((type) => !selectedTypes.includes(type)),
+    [typeOptions, selectedTypes],
+  );
+
+  const effectiveSelectedType = useMemo(() => {
+    if (availableTypeOptions.length === 0) return "";
+    if (selectedType && availableTypeOptions.includes(selectedType)) {
+      return selectedType;
+    }
+    return availableTypeOptions[0];
+  }, [availableTypeOptions, selectedType]);
+
+  const addType = () => {
+    if (!effectiveSelectedType) return;
+
+    updatePathItem(index, {
+      entity_type: [...selectedTypes, effectiveSelectedType],
+    });
+  };
+
+  const removeType = (typeToRemove: string) => {
+    const updatedTypes = selectedTypes.filter((type) => type !== typeToRemove);
+    updatePathItem(index, {
+      entity_type: updatedTypes.length === 0 ? "" : updatedTypes,
+    });
+  };
+
+  return (
+    <div className="qb-item-type">
+      <Form.Label>Type</Form.Label>
+      {typeOptions.length > 0 ? (
+        <Row className="g-2">
+          <Col sm={12}>
+            <div className="qb-item-type-choices">
+              <Form.Select
+                value={effectiveSelectedType}
+                onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                  setSelectedType(event.target.value)
+                }
+                disabled={availableTypeOptions.length === 0}
+              >
+                {availableTypeOptions.length > 0 ? (
+                  availableTypeOptions.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">No more type choices</option>
+                )}
+              </Form.Select>
+              <Button
+                type="button"
+                variant="outline-secondary"
+                onClick={addType}
+                disabled={!effectiveSelectedType}
+              >
+                Add
+              </Button>
+            </div>
+          </Col>
+
+          <Col sm={12}>
+            <div className="qb-item-type-selected-list">
+              {selectedTypes.length > 0 ? (
+                selectedTypes.map((type) => (
+                  <div key={type} className="qb-item-type-selected">
+                    <span>{type}</span>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline-danger"
+                      className="qb-item-type-remove"
+                      onClick={() => removeType(type)}
+                      aria-label={`Remove ${type}`}
+                    >
+                      <IoMdClose />
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                <Form.Text className="text-muted">Any type</Form.Text>
+              )}
+            </div>
+          </Col>
+        </Row>
+      ) : (
+        <Form.Control
+          className={errorTypes ? "is-invalid text-danger" : "text-muted"}
+          value={loadingTypes ? "Loading types..." : errorTypes}
+          readOnly
+        />
+      )}
     </div>
   );
 };
@@ -409,7 +616,7 @@ interface QbControlsProps {
   setOffset: (offset: number) => void;
   distinct: boolean;
   setDistinct: (distinct: boolean) => void;
-  loading: boolean;
+  disabled: boolean;
 }
 
 const QbControls: React.FC<QbControlsProps> = ({
@@ -419,7 +626,7 @@ const QbControls: React.FC<QbControlsProps> = ({
   setOffset,
   distinct,
   setDistinct,
-  loading,
+  disabled,
 }) => {
   return (
     <div id="qb-query-controls">
@@ -453,8 +660,8 @@ const QbControls: React.FC<QbControlsProps> = ({
           />
         </Col>
         <Col md={3} id="qb-query-submit">
-          <Button type="submit" size="lg" variant="dark" disabled={loading}>
-            {loading ? "Running..." : "Run query"}
+          <Button type="submit" size="lg" variant="dark" disabled={disabled}>
+            Run Query
           </Button>
         </Col>
       </Row>
