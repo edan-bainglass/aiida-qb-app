@@ -115,11 +115,6 @@ const App = () => {
       {} as Record<string, string[]>,
     );
 
-    const lastTag = path[path.length - 1].tag;
-    if (Object.values(project).every((p) => p.length === 0)) {
-      project[lastTag] = ["**"];
-    }
-
     return {
       path,
       filters,
