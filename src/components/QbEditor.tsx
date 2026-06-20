@@ -264,6 +264,7 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
       orm_base: ormBase,
       entity_type: entityType,
       filters: buildDefaultTypeFilter(ormBase, entityType),
+      projections: [],
     });
   };
 
@@ -534,6 +535,7 @@ const QbPathItemTypeEditor: React.FC<QbPathItemTypeEditorProps> = ({
     updatePathItem(index, {
       entity_type: updatedEntityType,
       filters: buildDefaultTypeFilter(item.orm_base, updatedEntityType),
+      projections: [],
     });
 
     setSelectedType("");
@@ -543,14 +545,13 @@ const QbPathItemTypeEditor: React.FC<QbPathItemTypeEditorProps> = ({
     const updatedTypes = selectedTypes.filter((type) => type !== typeToRemove);
     const updatedEntityType =
       updatedTypes.length === 0
-        ? item.orm_base === "group"
-          ? "group.core"
-          : ""
+        ? ENTITY_TYPES[item.orm_base].type
         : updatedTypes;
 
     updatePathItem(index, {
       entity_type: updatedEntityType,
       filters: buildDefaultTypeFilter(item.orm_base, updatedEntityType),
+      projections: [],
     });
 
     setSelectedType("");
