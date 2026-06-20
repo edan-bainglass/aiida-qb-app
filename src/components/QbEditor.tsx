@@ -257,6 +257,16 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
     return tags[item.joining_keyword] || [];
   }, [item.joining_keyword, tags, index]);
 
+  const handleEntityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const ormBase = event.target.value;
+    const entityType = ENTITY_TYPES[ormBase]?.type || "";
+    updatePathItem(index, {
+      orm_base: ormBase,
+      entity_type: entityType,
+      filters: buildDefaultTypeFilter(ormBase, entityType),
+    });
+  };
+
   useEffect(() => {
     if (index === 0) return;
 
@@ -371,15 +381,7 @@ const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
       <Row className="g-3">
         <Col md={9}>
           <Form.Label>Entity</Form.Label>
-          <Form.Select
-            value={item.orm_base}
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-              updatePathItem(index, {
-                orm_base: event.target.value,
-                entity_type: ENTITY_TYPES[event.target.value]?.type,
-              })
-            }
-          >
+          <Form.Select value={item.orm_base} onChange={handleEntityChange}>
             {Object.keys(ENTITY_TYPES).map((entityType) => (
               <option key={entityType} value={entityType}>
                 {entityType}
@@ -501,42 +503,57 @@ const QbPathItemTypeEditor: React.FC<QbPathItemTypeEditorProps> = ({
     [item.orm_base, types],
   );
 
-  const selectedTypes = useMemo(
-    () =>
-      Array.isArray(item.entity_type)
-        ? item.entity_type
-        : item.entity_type
-          ? [item.entity_type]
-          : [],
-    [item.entity_type],
-  );
+  const selectedTypes = useMemo(() => {
+    if (item.orm_base === "group") {
+      if (Array.isArray(item.entity_type)) {
+        return item.entity_type.filter((type) => type !== "group.core");
+      }
+      return item.entity_type && item.entity_type !== "group.core"
+        ? [item.entity_type]
+        : [];
+    }
+
+    return Array.isArray(item.entity_type)
+      ? item.entity_type
+      : item.entity_type
+        ? [item.entity_type]
+        : [];
+  }, [item.entity_type, item.orm_base]);
 
   const availableTypeOptions = useMemo(
     () => typeOptions.filter((type) => !selectedTypes.includes(type)),
     [typeOptions, selectedTypes],
   );
 
-  const effectiveSelectedType = useMemo(() => {
-    if (availableTypeOptions.length === 0) return "";
-    if (selectedType && availableTypeOptions.includes(selectedType)) {
-      return selectedType;
-    }
-    return availableTypeOptions[0];
-  }, [availableTypeOptions, selectedType]);
-
   const addType = () => {
-    if (!effectiveSelectedType) return;
+    if (!selectedType) return;
+    if (!availableTypeOptions.includes(selectedType)) return;
+
+    const updatedEntityType = [...selectedTypes, selectedType];
 
     updatePathItem(index, {
-      entity_type: [...selectedTypes, effectiveSelectedType],
+      entity_type: updatedEntityType,
+      filters: buildDefaultTypeFilter(item.orm_base, updatedEntityType),
     });
+
+    setSelectedType("");
   };
 
   const removeType = (typeToRemove: string) => {
     const updatedTypes = selectedTypes.filter((type) => type !== typeToRemove);
+    const updatedEntityType =
+      updatedTypes.length === 0
+        ? item.orm_base === "group"
+          ? "group.core"
+          : ""
+        : updatedTypes;
+
     updatePathItem(index, {
-      entity_type: updatedTypes.length === 0 ? "" : updatedTypes,
+      entity_type: updatedEntityType,
+      filters: buildDefaultTypeFilter(item.orm_base, updatedEntityType),
     });
+
+    setSelectedType("");
   };
 
   return (
@@ -547,12 +564,12 @@ const QbPathItemTypeEditor: React.FC<QbPathItemTypeEditorProps> = ({
           <Col sm={12}>
             <div className="qb-item-type-choices">
               <Form.Select
-                value={effectiveSelectedType}
+                value={selectedType}
                 onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
                   setSelectedType(event.target.value)
                 }
-                disabled={availableTypeOptions.length === 0}
               >
+                <option value="">Select specific type(s)</option>
                 {availableTypeOptions.length > 0 ? (
                   availableTypeOptions.map((type) => (
                     <option key={type} value={type}>
@@ -560,14 +577,16 @@ const QbPathItemTypeEditor: React.FC<QbPathItemTypeEditorProps> = ({
                     </option>
                   ))
                 ) : (
-                  <option value="">No more type choices</option>
+                  <option value="" disabled>
+                    No more type choices
+                  </option>
                 )}
               </Form.Select>
               <Button
                 type="button"
                 variant="outline-secondary"
                 onClick={addType}
-                disabled={!effectiveSelectedType}
+                disabled={!selectedType}
               >
                 Add
               </Button>
@@ -668,3 +687,53 @@ const QbControls: React.FC<QbControlsProps> = ({
     </div>
   );
 };
+
+function buildDefaultTypeFilter(
+  ormBase: string,
+  entityType: string | string[],
+): Record<string, unknown> {
+  if (!["node", "group"].includes(ormBase)) return {};
+
+  const selectedTypes = normalizeEntityTypes(entityType);
+  const filterKey = ormBase === "node" ? "node_type" : "type_string";
+  const values = selectedTypes.map((selectedType) =>
+    getTypeLikePattern(ormBase, selectedType),
+  );
+  const uniqueValues = Array.from(new Set(values));
+
+  if (uniqueValues.length === 1) {
+    return {
+      [filterKey]: {
+        like: uniqueValues[0],
+      },
+    };
+  }
+
+  return {
+    or: uniqueValues.map((value) => ({
+      [filterKey]: {
+        like: value,
+      },
+    })),
+  };
+}
+
+function normalizeEntityTypes(entityType: string | string[]): string[] {
+  if (Array.isArray(entityType)) {
+    const normalized = entityType.filter(Boolean);
+    return normalized.length > 0 ? normalized : [""];
+  }
+  return entityType ? [entityType] : [""];
+}
+
+function getTypeLikePattern(ormBase: string, entityType: string): string {
+  if (ormBase === "node") {
+    const parts = entityType.split(".").slice(0, -2).join(".");
+    return parts.length > 0 ? `${parts}.%` : "%";
+  } else if (ormBase === "group") {
+    if (entityType === "group.core") return "%";
+    const lastPart = entityType.split(".").slice(-1)[0];
+    return `core.${lastPart}%`;
+  }
+  throw new Error(`Unsupported orm_base: ${ormBase}`);
+}

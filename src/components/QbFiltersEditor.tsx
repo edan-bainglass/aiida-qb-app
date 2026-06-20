@@ -22,6 +22,11 @@ export const QbFiltersEditor: React.FC<QbFiltersEditorProps> = ({
   const extensions = useMemo(() => [json()], []);
   const [filtersError, setFiltersError] = useState<string | null>(null);
 
+  const currentFilters = useMemo(
+    () => JSON.stringify(item.filters ?? {}, null, 2),
+    [item.filters],
+  );
+
   const handleFilterChange = (value: string) => {
     const parsedFilters = parseJsonSafe(value);
     if (parsedFilters !== null) {
@@ -48,6 +53,7 @@ export const QbFiltersEditor: React.FC<QbFiltersEditorProps> = ({
             <ReactCodeMirror
               className="qb-filters-editor"
               extensions={extensions}
+              value={currentFilters}
               onChange={handleFilterChange}
               basicSetup={{
                 lineNumbers: false,

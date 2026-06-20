@@ -139,7 +139,7 @@ export async function getEntityProjections(
   apiBaseUrl?: string,
 ): Promise<string[]> {
   let apiUrl = `${getApiBaseUrl(apiBaseUrl)}/${ormBase}s/projections`;
-  if (ormBase === "node" && entityType !== "any") {
+  if (ormBase === "node" && entityType) {
     apiUrl = apiUrl.concat(`?type=${entityType}`);
   }
 

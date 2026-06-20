@@ -9,7 +9,11 @@ export function createPathItem(): QbPathItem {
     joining_value: "",
     edge_tag: "",
     outerjoin: false,
-    filters: {},
+    filters: {
+      node_type: {
+        like: "%",
+      },
+    },
     projections: [],
   };
 }

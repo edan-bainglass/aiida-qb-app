@@ -9,7 +9,7 @@
   background: var(--bs-body-bg);
 
   @media (min-width: 992px) {
-    height: 400px;
+    height: 410px;
   }
 }
 
@@ -41,7 +41,7 @@
 }
 
 .qb-selected-projections-list {
-  max-height: 336px;
+  max-height: 338px;
 }
 
 .qb-projection-choice {
@@ -55,10 +55,10 @@
   background: var(--bs-light);
   padding: 0.35rem 0.5rem;
   text-align: left;
-}
 
-.qb-projection-choice:hover {
-  background: var(--bs-secondary-bg);
+  &:hover {
+    background: var(--bs-secondary-bg);
+  }
 }
 
 .qb-selected-projection {
@@ -78,10 +78,10 @@
   cursor: grab;
   padding: 0 0.25rem;
   line-height: 1;
-}
 
-.qb-projection-drag-handle:active {
-  cursor: grabbing;
+  &:active {
+    cursor: grabbing;
+  }
 }
 
 .qb-selected-projection-label {

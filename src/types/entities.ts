@@ -71,6 +71,6 @@ export const ENTITY_TYPES: Record<string, Entity> = {
   // comment: CommentEntity,
 };
 
-export const GROUP_TYPES = ["group.core", "group.auto", "group.import"];
+export const GROUP_TYPES = ["group.auto", "group.import"];
 
 export type EntityType = keyof typeof ENTITY_TYPES;
