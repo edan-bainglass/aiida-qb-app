@@ -5,12 +5,12 @@ import { Form } from "react-bootstrap";
 import type { QbPathItem } from "@/types/query";
 import { createPathItem } from "@/utils/query";
 
-import { QbControls } from "./QbControls";
-import { QbPathEditor } from "./QbPathEditor";
+import { Controls } from "./Controls";
+import { PathEditor } from "./PathEditor";
 
-import "./QbEditor.scss";
+import "./Editor.scss";
 
-interface QbEditorProps {
+interface EditorProps {
   pathItems: QbPathItem[];
   setPathItems: React.Dispatch<React.SetStateAction<QbPathItem[]>>;
   tags: Record<string, string[]>;
@@ -24,7 +24,7 @@ interface QbEditorProps {
   handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
 }
 
-export const QbEditor: React.FC<QbEditorProps> = ({
+export const Editor: React.FC<EditorProps> = ({
   pathItems,
   setPathItems,
   tags,
@@ -108,7 +108,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
         }}
       >
         <div className="qb-section">
-          <QbPathEditor
+          <PathEditor
             pathItems={pathItems}
             tags={tags}
             addPathItem={addPathItem}
@@ -118,7 +118,7 @@ export const QbEditor: React.FC<QbEditorProps> = ({
           />
         </div>
         <div className="qb-section">
-          <QbControls
+          <Controls
             limit={limit}
             setLimit={setLimit}
             offset={offset}

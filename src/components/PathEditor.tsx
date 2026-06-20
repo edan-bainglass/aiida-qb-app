@@ -5,11 +5,11 @@ import { Button } from "react-bootstrap";
 import { getNodeTypes } from "@/api/querybuilder";
 import type { QbPathItem } from "@/types/query";
 
-import { QbPathItemEditor } from "./QbPathItemEditor";
+import { PathItemEditor } from "./PathItemEditor";
 
-import "./QbPathEditor.scss";
+import "./PathEditor.scss";
 
-interface QbPathEditorProps {
+interface PathEditorProps {
   pathItems: QbPathItem[];
   tags: Record<string, string[]>;
   addPathItem: () => void;
@@ -18,7 +18,7 @@ interface QbPathEditorProps {
   setPathError: (index: number, error: string) => void;
 }
 
-export const QbPathEditor: React.FC<QbPathEditorProps> = ({
+export const PathEditor: React.FC<PathEditorProps> = ({
   pathItems,
   tags,
   addPathItem,
@@ -60,7 +60,7 @@ export const QbPathEditor: React.FC<QbPathEditorProps> = ({
     <div id="qb-path-editor">
       {pathItems.map((item, index) => (
         <div key={`path-item-${index}`}>
-          <QbPathItemEditor
+          <PathItemEditor
             index={index}
             item={item}
             types={types}

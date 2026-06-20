@@ -6,15 +6,15 @@ import { Accordion, Form } from "react-bootstrap";
 
 import type { QbPathItem } from "@/types/query";
 
-import "./QbFiltersEditor.scss";
+import "./FiltersEditor.scss";
 
-interface QbFiltersEditorProps {
+interface FiltersEditorProps {
   index: number;
   item: QbPathItem;
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
 }
 
-export const QbFiltersEditor: React.FC<QbFiltersEditorProps> = ({
+export const FiltersEditor: React.FC<FiltersEditorProps> = ({
   index,
   item,
   updatePathItem,

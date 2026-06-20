@@ -23,9 +23,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import "./QbProjectionsEditor.scss";
+import "./ProjectionsEditor.scss";
 
-interface QbProjectionsEditorProps {
+interface ProjectionsEditorProps {
   index: number;
   item: QbPathItem;
   options: string[];
@@ -33,7 +33,7 @@ interface QbProjectionsEditorProps {
   validationError?: string;
 }
 
-export const QbProjectionsEditor: React.FC<QbProjectionsEditorProps> = ({
+export const ProjectionsEditor: React.FC<ProjectionsEditorProps> = ({
   index,
   item,
   options,

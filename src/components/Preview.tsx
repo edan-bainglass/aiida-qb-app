@@ -1,8 +1,12 @@
 import type { QbRequest } from "@/types/query";
 
-import "./QbPreview.scss";
+import "./Preview.scss";
 
-export const QbPreview: React.FC<QbPreviewProps> = ({ request }) => {
+interface PreviewProps {
+  request: QbRequest;
+}
+
+export const Preview: React.FC<PreviewProps> = ({ request }) => {
   return (
     <div id="qb-preview">
       <h2>Preview</h2>
@@ -10,7 +14,3 @@ export const QbPreview: React.FC<QbPreviewProps> = ({ request }) => {
     </div>
   );
 };
-
-interface QbPreviewProps {
-  request: QbRequest;
-}

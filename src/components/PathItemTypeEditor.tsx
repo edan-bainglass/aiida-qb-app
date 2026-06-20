@@ -7,9 +7,9 @@ import { ENTITY_TYPES, GROUP_TYPES } from "@/types/entities";
 import type { QbPathItem } from "@/types/query";
 import { buildDefaultTypeFilter } from "@/utils/query";
 
-import "./QbPathItemTypeEditor.scss";
+import "./PathItemTypeEditor.scss";
 
-interface QbPathItemTypeEditorProps {
+interface PathItemTypeEditorProps {
   types: string[];
   item: QbPathItem;
   updatePathItem: (index: number, updatedItem: Partial<QbPathItem>) => void;
@@ -18,7 +18,7 @@ interface QbPathItemTypeEditorProps {
   loadingTypes: boolean;
 }
 
-export const QbPathItemTypeEditor: React.FC<QbPathItemTypeEditorProps> = ({
+export const PathItemTypeEditor: React.FC<PathItemTypeEditorProps> = ({
   types,
   item,
   updatePathItem,

@@ -9,9 +9,9 @@ import type {
   QbResult,
 } from "@/types/query";
 
-import "./QbResults.scss";
+import "./Results.scss";
 
-interface QbResultsProps {
+interface ResultsProps {
   results: QbResult[];
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -29,7 +29,7 @@ interface TagTable {
 
 const TABLE_PAGE_SIZE = 10;
 
-export const QbResults: React.FC<QbResultsProps> = ({
+export const Results: React.FC<ResultsProps> = ({
   results,
   page,
   setPage,

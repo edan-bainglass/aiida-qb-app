@@ -1,3 +1,3 @@
-export { QbEditor } from "./QbEditor";
-export { QbResults } from "./QbResults";
-export { QbPreview } from "./QbPreview";
+export { Editor } from "./Editor";
+export { Results } from "./Results";
+export { Preview } from "./Preview";

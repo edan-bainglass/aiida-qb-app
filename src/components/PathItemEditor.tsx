@@ -8,13 +8,13 @@ import { ENTITY_TYPES } from "@/types/entities";
 import type { QbPathItem } from "@/types/query";
 import { buildDefaultTypeFilter } from "@/utils/query";
 
-import { QbFiltersEditor } from "./QbFiltersEditor";
-import { QbPathItemTypeEditor } from "./QbPathItemTypeEditor";
-import { QbProjectionsEditor } from "./QbProjectionsEditor";
+import { FiltersEditor } from "./FiltersEditor";
+import { PathItemTypeEditor } from "./PathItemTypeEditor";
+import { ProjectionsEditor } from "./ProjectionsEditor";
 
-import "./QbPathItemEditor.scss";
+import "./PathItemEditor.scss";
 
-interface QbPathItemEditorProps {
+interface PathItemEditorProps {
   index: number;
   item: QbPathItem;
   types: string[];
@@ -26,7 +26,7 @@ interface QbPathItemEditorProps {
   setPathError: (index: number, error: string) => void;
 }
 
-export const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
+export const PathItemEditor: React.FC<PathItemEditorProps> = ({
   index,
   item,
   types,
@@ -210,7 +210,7 @@ export const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
         </Col>
       </Row>
       {hasTypes && (
-        <QbPathItemTypeEditor
+        <PathItemTypeEditor
           types={types}
           item={item}
           updatePathItem={updatePathItem}
@@ -271,12 +271,12 @@ export const QbPathItemEditor: React.FC<QbPathItemEditorProps> = ({
           </Col>
         </Row>
       )}
-      <QbFiltersEditor
+      <FiltersEditor
         index={index}
         item={item}
         updatePathItem={updatePathItem}
       />
-      <QbProjectionsEditor
+      <ProjectionsEditor
         index={index}
         item={item}
         options={projections}

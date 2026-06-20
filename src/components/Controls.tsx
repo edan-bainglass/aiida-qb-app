@@ -1,8 +1,8 @@
 import { Button, Col, Form, Row } from "react-bootstrap";
 
-import "./QbControls.scss";
+import "./Controls.scss";
 
-interface QbControlsProps {
+interface ControlsProps {
   limit: number;
   setLimit: (limit: number) => void;
   offset: number;
@@ -12,7 +12,7 @@ interface QbControlsProps {
   disabled: boolean;
 }
 
-export const QbControls: React.FC<QbControlsProps> = ({
+export const Controls: React.FC<ControlsProps> = ({
   limit,
   setLimit,
   offset,

@@ -4,7 +4,7 @@ import { Card, Carousel, Col, Container, Row } from "react-bootstrap";
 
 import { submitRequest } from "@/api/querybuilder";
 import aiidaLogo from "@/assets/img/aiida-logo.svg";
-import { QbEditor, QbPreview, QbResults } from "@/components";
+import { Editor, Preview, Results } from "@/components";
 import type {
   QbError,
   QbPathItem,
@@ -165,7 +165,7 @@ const App = () => {
             <Col xl={8}>
               <Card className="qb-card">
                 <Card.Body>
-                  <QbEditor
+                  <Editor
                     pathItems={pathItems}
                     setPathItems={setPathItems}
                     tags={tags}
@@ -184,7 +184,7 @@ const App = () => {
             <Col xl={4}>
               <Card className="qb-card">
                 <Card.Body>
-                  <QbPreview request={request} />
+                  <Preview request={request} />
                 </Card.Body>
               </Card>
             </Col>
@@ -193,7 +193,7 @@ const App = () => {
         <Carousel.Item>
           <Card className="qb-card">
             <Card.Body>
-              <QbResults
+              <Results
                 results={results}
                 page={page}
                 setPage={setPage}
