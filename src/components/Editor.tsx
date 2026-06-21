@@ -96,8 +96,10 @@ export const Editor: React.FC<EditorProps> = ({
   );
 
   return (
-    <div id="qb-editor">
-      <h2>Query</h2>
+    <section id="qb-editor">
+      <div className="qb-section-header">
+        <h2>Query</h2>
+      </div>
       <Form
         onSubmit={(event) => {
           if (hasError) {
@@ -129,6 +131,6 @@ export const Editor: React.FC<EditorProps> = ({
           />
         </div>
       </Form>
-    </div>
+    </section>
   );
 };

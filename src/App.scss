@@ -34,3 +34,15 @@
 .table {
 	margin-bottom: 0;
 }
+
+.qb-section-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 0.25rem;
+
+	h2 {
+		margin-bottom: 0.25rem;
+	}
+}

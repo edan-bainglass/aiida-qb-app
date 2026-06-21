@@ -52,8 +52,8 @@ export const Results: React.FC<ResultsProps> = ({
   const showingTo = Math.min(page * TABLE_PAGE_SIZE, totalHits);
 
   return (
-    <div id="qb-results">
-      <div className="qb-results-header">
+    <section id="qb-results">
+      <div className="qb-section-header">
         <button className="btn btn-secondary btn-sm" onClick={onBack}>
           Back
         </button>
@@ -131,7 +131,7 @@ export const Results: React.FC<ResultsProps> = ({
       ) : (
         <div id="qb-empty">No results found</div>
       )}
-    </div>
+    </section>
   );
 };
 

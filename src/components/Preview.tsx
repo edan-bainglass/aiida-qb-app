@@ -8,9 +8,11 @@ interface PreviewProps {
 
 export const Preview: React.FC<PreviewProps> = ({ request }) => {
   return (
-    <div id="qb-preview">
-      <h2>Preview</h2>
+    <section id="qb-preview">
+      <div className="qb-section-header">
+        <h2>Preview</h2>
+      </div>
       <pre>{JSON.stringify(request, null, 2)}</pre>
-    </div>
+    </section>
   );
 };
