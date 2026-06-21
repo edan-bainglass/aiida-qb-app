@@ -1,4 +1,9 @@
-import type { QbError, QbRequest, QbResponse } from "@/types/query";
+import type {
+  QbError,
+  QbJsonApiError,
+  QbRequest,
+  QbResponse,
+} from "@/types/query";
 
 export function normalizePathPrefix(
   value: string | undefined,
@@ -28,6 +33,14 @@ function getApiBaseUrl(apiBaseUrl?: string): string {
 function readErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== "object") {
     return fallback;
+  }
+
+  if (isJsonApiError(payload)) {
+    const firstError = payload.errors[0];
+
+    return [firstError.status, firstError.title, firstError.detail]
+      .filter((value) => value && value.trim())
+      .join(" - ");
   }
 
   const response = payload as {
@@ -75,6 +88,48 @@ function readErrorMessage(payload: unknown, fallback: string): string {
   return fallback;
 }
 
+function isJsonApiError(payload: unknown): payload is QbJsonApiError {
+  if (!payload || typeof payload !== "object") {
+    return false;
+  }
+
+  const candidate = payload as {
+    jsonapi?: unknown;
+    links?: unknown;
+    errors?: unknown;
+  };
+
+  if (!candidate.jsonapi || typeof candidate.jsonapi !== "object") {
+    return false;
+  }
+
+  if (!candidate.links || typeof candidate.links !== "object") {
+    return false;
+  }
+
+  if (!Array.isArray(candidate.errors) || candidate.errors.length === 0) {
+    return false;
+  }
+
+  return candidate.errors.every((error) => {
+    if (!error || typeof error !== "object") {
+      return false;
+    }
+
+    const candidate = error as {
+      status?: unknown;
+      title?: unknown;
+      detail?: unknown;
+    };
+
+    return (
+      typeof candidate.status === "string" &&
+      typeof candidate.title === "string" &&
+      typeof candidate.detail === "string"
+    );
+  });
+}
+
 export async function submitRequest(request: QbRequest): Promise<QbResponse> {
   const apiBaseUrl = getApiBaseUrl();
   const params = new URLSearchParams({ full: "true" });
@@ -96,12 +151,14 @@ export async function submitRequest(request: QbRequest): Promise<QbResponse> {
     .catch(() => null)) as QbResponse | null;
 
   if (!response.ok) {
+    const details = isJsonApiError(payload) ? payload : undefined;
+
     throw {
       message: readErrorMessage(
-        payload,
+        details ?? payload,
         `QueryBuilder request failed with status ${response.status}`,
       ),
-      details: payload,
+      details,
     } satisfies QbError;
   }
 

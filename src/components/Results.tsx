@@ -84,8 +84,23 @@ export const Results: React.FC<ResultsProps> = ({
         </div>
       ) : error ? (
         <Alert variant="danger">
-          <h2 className="h6">QueryBuilder request failed</h2>
-          <p className="mb-0">{error.message}</p>
+          <h4>Request failed with the following errors:</h4>
+          <div className="qb-error-details">
+            <ul className="mb-0">
+              {error.details?.errors.map((error, index) => (
+                <li
+                  key={`${error.status}-${error.title}-${index}`}
+                  className="qb-error-item"
+                >
+                  <strong>
+                    {error.status}: {error.title}
+                  </strong>
+                  <br />
+                  {error.detail}
+                </li>
+              ))}
+            </ul>
+          </div>
         </Alert>
       ) : tagTables.length > 0 ? (
         <>

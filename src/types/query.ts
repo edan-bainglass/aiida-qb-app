@@ -11,7 +11,7 @@ export type QbPathItem = {
 };
 
 export type QbRequest = {
-  path: Array<QbPathItem>;
+  path: QbPathItem[];
   filters?: Record<string, Record<string, unknown>>;
   project?: Record<string, string | string[]>;
   limit?: number;
@@ -37,9 +37,23 @@ export type QbResponse = {
   };
 };
 
+export type QbJsonApiError = {
+  jsonapi: {
+    version: string;
+  };
+  links: {
+    self: string;
+  };
+  errors: {
+    status: string;
+    title: string;
+    detail: string;
+  }[];
+};
+
 export type QbError = {
   message: string;
-  details?: unknown;
+  details?: QbJsonApiError;
 };
 
 export type PaginationItem =
